@@ -17,9 +17,16 @@ int Core::Run(int argc, char* argv[]) {
     return 1;
   }
 
+  status_ = Core::Status::Starting;
   core_config_.Parse(argc, argv);
 
+  status_ = Core::Status::Running;
+
   std::cout << "Monstrum2D!";
+
+  status_ = Core::Status::Stopping;
+
+  status_ = Core::Status::Stopped;
 
   return 0;
 }
