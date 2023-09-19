@@ -1,0 +1,8 @@
+- component:
+  name: player_component
+  content:
+  - fixed_string:
+      name: player_name
+      size: 16
+      default: plater
+  
