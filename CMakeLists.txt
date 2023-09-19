@@ -11,17 +11,16 @@ set(THIRD_PARTY_INCLUDE_DIR)
 set(THIRD_PARTY_LIBS)
 
 # Python
-find_package (Python 3 COMPONENTS Interpreter Development)
-set (THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${Python_INCLUDE_DIRS})
-set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${Python_LIBRARIES})
-set (PYTHON3 python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
+find_package(Python 3 COMPONENTS Interpreter Development)
+set(THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${Python_INCLUDE_DIRS})
+set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${Python_LIBRARIES})
+set(PYTHON3 python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
 message(PYTHON3 = ${PYTHON3})
 
 #yaml-cpp
-set (YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")
-set (YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml tools")
-set (YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
-#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp [EXCLUDE_FROM_ALL])
+set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml tools")
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp)
 set(THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/include)
 set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} yaml-cpp)
@@ -37,8 +36,8 @@ find_package(
 
 file (
   GLOB_RECURSE
+  #GLOB
   PROJECT_SOURCE_FILES
-  main.cpp
   ${PROJECT_SOURCE_DIR}/src/*.h
   ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
