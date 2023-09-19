@@ -1,6 +1,7 @@
 #include "core/core.h"
 
 #include <iostream>
+#include <filesystem>
 
 namespace m2d {
 
@@ -22,6 +23,7 @@ int Core::Run(int argc, char* argv[]) {
 
   status_ = Core::Status::Running;
 
+  std::cout << std::filesystem::current_path() << "\n";
   std::cout << "Monstrum2D!";
 
   status_ = Core::Status::Stopping;

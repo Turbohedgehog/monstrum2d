@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <map>
+
+#include "common/common_types.h"
 
 #include "core/core_config.h"
 
@@ -25,6 +28,9 @@ class Core {
 
   Status status_ = Status::Stopped;
   CoreConfig core_config_;
+
+  uint64_t esc_handler_counter_ = 0;
+  std::map<uint64_t, ECSHandlerPtr> esc_handlers_;
 };
 
 }  // namespace m2d
