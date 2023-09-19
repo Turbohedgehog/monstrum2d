@@ -18,7 +18,11 @@ set (PYTHON3 python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
 message(PYTHON3 = ${PYTHON3})
 
 #yaml-cpp
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp [EXCLUDE_FROM_ALL])
+set (YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")
+set (YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml tools")
+set (YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp [EXCLUDE_FROM_ALL])
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp)
 set(THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/include)
 set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} yaml-cpp)
 
@@ -32,17 +36,19 @@ find_package(
   ${PYTHON3})
 
 file (
-    GLOB
-    PROJECT_SOURCE_FILES
-    *.cpp
+  GLOB_RECURSE
+  PROJECT_SOURCE_FILES
+  main.cpp
+  ${PROJECT_SOURCE_DIR}/src/*.h
+  ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
-
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
 include_directories(THIRD_PARTY_INCLUDE_DIR)
 
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
 
@@ -55,7 +61,7 @@ if(Boost_FOUND)
     Boost::${PYTHON3})
 endif()
 
-target_link_libraries (${PROJECT_NAME} ${THIRD_PARTY_LIBS})
+target_link_libraries(${PROJECT_NAME} ${THIRD_PARTY_LIBS})
 
 set(CPACK_GENERATOR DEB)
 
