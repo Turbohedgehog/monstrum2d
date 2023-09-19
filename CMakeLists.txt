@@ -41,7 +41,7 @@ file (
   ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
 
-include_directories(${THIRD_PARTY_INCLUDE_DIR} ${PROJECT_SOURCE_FILES})
+include_directories(${THIRD_PARTY_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/src)
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 

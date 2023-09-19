@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "core_config.h"
+#include "core/core_config.h"
 
 namespace m2d {
 
