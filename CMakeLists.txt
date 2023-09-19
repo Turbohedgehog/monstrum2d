@@ -11,9 +11,11 @@ set(THIRD_PARTY_INCLUDE_DIR)
 set(THIRD_PARTY_LIBS)
 
 # Python
-find_package (Python COMPONENTS Interpreter Development)
+find_package (Python 3 COMPONENTS Interpreter Development)
 set (THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${Python_INCLUDE_DIRS})
 set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${Python_LIBRARIES})
+set (PYTHON3 python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
+message(PYTHON3 = ${PYTHON3})
 
 #yaml-cpp
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp [EXCLUDE_FROM_ALL])
@@ -27,7 +29,7 @@ find_package(
   REQUIRED
   COMPONENTS
   program_options
-  python39)
+  ${PYTHON3})
 
 file (
     GLOB
@@ -50,7 +52,7 @@ if(Boost_FOUND)
     ${THIRD_PARTY_LIBS}
     Boost::boost
     Boost::program_options
-    Boost::python39)
+    Boost::${PYTHON3})
 endif()
 
 target_link_libraries (${PROJECT_NAME} ${THIRD_PARTY_LIBS})
