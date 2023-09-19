@@ -36,13 +36,12 @@ find_package(
 
 file (
   GLOB_RECURSE
-  #GLOB
   PROJECT_SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/src/*.h
   ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
 
-include_directories(THIRD_PARTY_INCLUDE_DIR)
+include_directories(${THIRD_PARTY_INCLUDE_DIR} ${PROJECT_SOURCE_FILES})
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
