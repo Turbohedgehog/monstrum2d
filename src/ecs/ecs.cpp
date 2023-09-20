@@ -2,7 +2,11 @@
 
 namespace m2d {
 
-ECS::ECS(ECSHandlerWeakPtr ecs_handler)
-  : ecs_handler_(ecs_handler) {}
+namespace ecs {
+  
+ECS::ECS(ECSHolderWeakPtr ecs_holder)
+  : ecs_holder_(ecs_holder) {}
+
+}  // namespace ecs
 
 }  // namespace m2d

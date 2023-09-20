@@ -6,12 +6,16 @@
 
 namespace m2d {
 
-class ECSHandler : std::enable_shared_from_this<ECSHandler> {
+namespace ecs {
+  
+class ECSHolder : std::enable_shared_from_this<ECSHolder> {
  public:
-  ECSHandler(uint32_t id);
+  ECSHolder(uint32_t id);
 
  private:
   uint32_t id_;
 };
+
+}  // namespace ecs
 
 }  // namespace m2d

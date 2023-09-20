@@ -30,7 +30,7 @@ class Core {
   CoreConfig core_config_;
 
   uint64_t esc_handler_counter_ = 0;
-  std::map<uint64_t, ECSHandlerPtr> esc_handlers_;
+  std::map<uint64_t, ecs::ECSHolderPtr> esc_holders_;
 };
 
 }  // namespace m2d

@@ -4,12 +4,16 @@
 
 namespace m2d {
 
-class ECSHandler;
-using ECSHandlerPtr = std::shared_ptr<ECSHandler>;
-using ECSHandlerWeakPtr = std::weak_ptr<ECSHandler>;
+namespace ecs {
+
+class ECSHolder;
+using ECSHolderPtr = std::shared_ptr<ECSHolder>;
+using ECSHolderWeakPtr = std::weak_ptr<ECSHolder>;
 
 class ECS;
 using ECSPtr = std::shared_ptr<ECS>;
 using ECSWeakPtr = std::weak_ptr<ECS>;
+
+}  // namespace ecs
 
 }  // namespace m2d

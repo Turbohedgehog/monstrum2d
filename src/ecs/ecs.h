@@ -4,12 +4,16 @@
 
 namespace m2d {
 
+namespace ecs {
+
 class ECS {
  public:
-  ECS(ECSHandlerWeakPtr ecs_handler);
+  ECS(ECSHolderWeakPtr ecs_holder);
 
  private:
-  ECSHandlerWeakPtr ecs_handler_;
+  ECSHolderWeakPtr ecs_holder_;
 };
+
+}  // namespace ecs
 
 }  // namespace m2d
