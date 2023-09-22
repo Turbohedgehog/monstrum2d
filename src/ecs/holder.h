@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include <common/common_types.h>
 
@@ -8,9 +9,9 @@ namespace m2d {
 
 namespace ecs {
   
-class ECSHolder : std::enable_shared_from_this<ECSHolder> {
+class Holder : std::enable_shared_from_this<Holder> {
  public:
-  ECSHolder(uint32_t id);
+  Holder(uint32_t id);
 
  private:
   uint32_t id_;

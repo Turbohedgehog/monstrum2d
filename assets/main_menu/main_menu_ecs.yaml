@@ -1,0 +1,7 @@
+component:
+  name: main_menu
+  content:
+  - int:
+      name: current_menu_idx
+  - int:
+      name: current_menu_item

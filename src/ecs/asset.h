@@ -2,18 +2,13 @@
 
 #include <string>
 
-#include "ecs/component_data.h"
-
 namespace m2d {
 
 namespace ecs {
   
-class Component {
+class Asset {
  public:
-  
- private:
-  std::string name_;
-  ComponentData data_;
+  virtual bool Load(const std::string& filename) = 0;
 };
 
 }  // namespace ecs

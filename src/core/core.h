@@ -29,8 +29,8 @@ class Core {
   Status status_ = Status::Stopped;
   CoreConfig core_config_;
 
-  uint64_t esc_handler_counter_ = 0;
-  std::map<uint64_t, ecs::ECSHolderPtr> esc_holders_;
+  std::size_t esc_handler_counter_ = 0;
+  std::map<std::size_t, ecs::HolderPtr> esc_holders_;
 };
 
 }  // namespace m2d
