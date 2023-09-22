@@ -1,7 +1,7 @@
-component:
-  name: main_menu
-  content:
-  - int:
+- component:
+    name: main_menu
+    content:
+    - int:
       name: current_menu_idx
-  - int:
+    - int:
       name: current_menu_item

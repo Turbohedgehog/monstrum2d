@@ -1,0 +1,11 @@
+name: Monstrum2D
+version:
+  major: 0
+  minor: 1
+
+ecs:
+  component:
+    - schemas: assets/main_menu/main_menu_ecs.yaml
+    - schemas: assets/player/player_ecs.yaml
+  system:
+    ...

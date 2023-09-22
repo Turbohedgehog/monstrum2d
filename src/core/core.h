@@ -25,6 +25,9 @@ class Core {
  
  private:
   Core();
+  ecs::HolderWeakPtr CreatreECSHolder();
+  void CreateInitialHolder();
+  void MainLoop();
 
   Status status_ = Status::Stopped;
   CoreConfig core_config_;

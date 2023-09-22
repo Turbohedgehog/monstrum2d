@@ -23,3 +23,6 @@ build/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+monstrum2d.exe
+*.pdb

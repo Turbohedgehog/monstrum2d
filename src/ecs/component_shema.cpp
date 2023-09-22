@@ -1,4 +1,4 @@
-#include "ecs/component_asset.h"
+#include "ecs/component_shema.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -9,8 +9,8 @@ namespace m2d {
 
 namespace ecs {
 
-bool ComponentAsset::Load(const std::string& filename) {
-  YAML::Node doc = YAML::LoadFile(filename);
+bool ComponentSchema::Load(const std::filesystem::path& schema_path) {
+  YAML::Node doc = YAML::LoadFile(schema_path.generic_string());
   if (!doc.IsSequence()) {
     throw std::invalid_argument("Wrong document format");
   }

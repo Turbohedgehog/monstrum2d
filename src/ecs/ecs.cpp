@@ -8,6 +8,10 @@ namespace ecs {
 ECS::ECS(HolderWeakPtr ecs_holder)
   : ecs_holder_(ecs_holder) {}
 
+HolderWeakPtr ECS::GetHolder() const {
+  return ecs_holder_;
+}
+
 EntityWeakPtr ECS::CreateEnity() {
   auto entity = pool_->AllocateEntity(entity_counter_, shared_from_this());
   ++entity_counter_;
