@@ -17,6 +17,11 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
     throw std::invalid_argument("Wrong document format");
   }
 
+  auto test_schema = std::make_shared<ComponentSchema>("Test");
+  test_schema->AppendField<ComponentIntField>("id");
+  test_schema->AppendField<ComponentDoubleField>("value", 3.0);
+  schemas.emplace_back(test_schema);
+
   for (auto component_shema_node : doc) {
     //component_shema_node.
   }

@@ -1,7 +1,9 @@
 #include "core/core.h"
 
+#include <chrono>
 #include <iostream>
 #include <filesystem>
+#include <thread>
 
 #include "ecs/holder.h"
 
@@ -36,6 +38,8 @@ int Core::Run(int argc, char* argv[]) {
     return 3;
   }
 
+  InitHolders();
+
   status_ = Core::Status::Running;
 
   std::cout << std::filesystem::current_path() << "\n";
@@ -69,10 +73,29 @@ void Core::CreateInitialHolder() {
   }
 }
 
+void Core::InitHolders() {
+  for ([[maybe_unused]] auto& [_, holder] : esc_holders_) {
+    holder->Init();
+  }
+}
+
 void Core::MainLoop() {
-  while (status_ != Status::Running) {
-    for ([[maybe_unused]]  auto& [_, holder] : esc_holders_) {
-      holder->Update(0.1f);
+  auto fps = core_config_.GetFPS();
+  auto delay = std::chrono::duration<double>(1. / fps);
+  std::chrono::high_resolution_clock timer;
+  auto last_update = timer.now();
+  while (status_ == Status::Running && !esc_holders_.empty()) {
+    std::this_thread::sleep_for(delay);
+    auto current = timer.now();
+    auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(current - last_update).count() / 1000000.0;
+    for (auto holder_it = esc_holders_.begin(); holder_it != esc_holders_.end();) {
+      auto holder = holder_it->second;
+      if (holder->GetECSCount() == 0) {
+        holder_it = esc_holders_.erase(holder_it);
+      } else {
+        holder->Update(deltaTime);
+        ++holder_it;
+      }
     }
   }
 }

@@ -27,6 +27,7 @@ class Core {
   Core();
   ecs::HolderWeakPtr CreatreECSHolder();
   void CreateInitialHolder();
+  void InitHolders();
   void MainLoop();
 
   Status status_ = Status::Stopped;

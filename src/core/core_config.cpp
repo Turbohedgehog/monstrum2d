@@ -73,6 +73,17 @@ void CoreConfig::LoadConfig() {
       }
     }
   }
+
+  auto fps = config_doc["fps"];
+  if (fps) {
+    if (!fps.IsScalar()) {
+      throw std::runtime_error("FPS value must be scalar!");
+    }
+    fps_ = fps.as<double>();
+    if (fps_ <= 0.) {
+      throw std::runtime_error("FPS value must be greater tnah zero!");
+    }
+  }
 }
 
 int CoreConfig::GetMajorVersion() const {
@@ -85,6 +96,10 @@ int CoreConfig::GetMinorVersion() const {
 
 const std::vector<std::string>& CoreConfig::GetECSComponentSchemaPaths() const {
   return ecs_component_schema_paths_;
+}
+
+double CoreConfig::GetFPS() const {
+  return fps_;
 }
 
 }  // namespace m2d
