@@ -20,6 +20,20 @@ bool ComponentSchema::Load(const std::filesystem::path& schema_path) {
 }
 */
 
+ComponentFixedStringField::ComponentFixedStringField(
+    const std::string& name,
+    std::size_t size,
+    const std::string& default_value)
+  : ComponentField(name)
+  , size_(size)
+  , default_value_(default_value.substr(0, size)) {
+}
+
+std::size_t ComponentFixedStringField::GetSize() const {
+  return size_;
+}
+
+
 ComponentField::ComponentField(const std::string& name)
   : name_(name) {}
 

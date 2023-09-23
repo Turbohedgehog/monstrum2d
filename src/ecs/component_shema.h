@@ -48,11 +48,16 @@ class ComponentPrimitiveField : public ComponentField {
 using ComponentIntField = ComponentPrimitiveField<int>;
 using ComponentDoubleField = ComponentPrimitiveField<double>;
 
-//class ComponentIntField : public ComponentPrimitiveField<int> {};
+class ComponentFixedStringField : public ComponentField {
+ public:
+  ComponentFixedStringField(const std::string& name, std::size_t size, const std::string& default_value = "");
+  std::size_t GetSize() const override;
 
-//class ComponentDoubleField : public ComponentPrimitiveField<double> {};
+ private:
+  std::size_t size_ = 0;
+  std::string default_value_;
 
-//class ComponentFixedStringField : public ComponentField {};
+};
 
 //class ComponentFixedArrayString : public ComponentField {};
 
