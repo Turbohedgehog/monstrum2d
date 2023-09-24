@@ -22,11 +22,15 @@ class Component;
 using ComponentPtr = std::shared_ptr<Component>;
 using ComponentWeakPtr = std::weak_ptr<Component>;
 
+//using ComponentDataPtr = std::shared_ptr<char[]>;
+//using ComponentDataWeakPtr = std::weak_ptr<char[]>;
+
 class ComponentSchema;
 using ComponentSchemaPtr = std::shared_ptr<ComponentSchema>;
 
 class Pool;
 using PoolPtr = std::shared_ptr<Pool>;
+using PoolWeakPtr = std::weak_ptr<Pool>;
 
 }  // namespace ecs
 

@@ -21,6 +21,10 @@ EntityWeakPtr ECS::CreateEnity() {
   return entity;
 }
 
+PoolWeakPtr ECS::GetPool() const {
+  return pool_;
+}
+
 }  // namespace ecs
 
 }  // namespace m2d

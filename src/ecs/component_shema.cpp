@@ -3,22 +3,14 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "yaml-cpp/yaml.h"
+#include <boost/format.hpp>
+
+//#include "ecs/component_data.h"
+#include "ecs/component.h"
 
 namespace m2d {
 
 namespace ecs {
-
-/*
-bool ComponentSchema::Load(const std::filesystem::path& schema_path) {
-  YAML::Node doc = YAML::LoadFile(schema_path.generic_string());
-  if (!doc.IsSequence()) {
-    throw std::invalid_argument("Wrong document format");
-  }
-
-  return false;
-}
-*/
 
 ComponentFixedStringField::ComponentFixedStringField(
     const std::string& name,
@@ -49,7 +41,30 @@ const std::string& ComponentSchema::GetName() const {
 }
 
 void ComponentSchema::AppendField(ComponentFieldPtr field) {
+  const auto& field_name = field->GetName();
+  if (field_index_map_.left.find(field_name) == field_index_map_.left.end()) {
+    throw std::runtime_error(
+      (
+        boost::format("[%s] Attempt to add a field with a duplicate name '%s'") %
+          GetName() %
+          field->GetName()
+      ).str()
+    );
+  }
 
+  field_index_map_.insert({field_name, field_counter_});
+  fields_[field_counter_] = field;
+
+  data_size_ += field->GetSize();
+  ++field_counter_;
+}
+
+std::size_t ComponentSchema::GetDataSize() const {
+  return data_size_;
+}
+
+ComponentPtr ComponentSchema::AllocateComponent(ECSWeakPtr ecs) const {
+  return ComponentPtr();
 }
 
 }  // namespace ecs

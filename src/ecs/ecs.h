@@ -15,6 +15,7 @@ class ECS : public std::enable_shared_from_this<ECS> {
   ECS(HolderWeakPtr ecs_holder);
   EntityWeakPtr CreateEnity();
   HolderWeakPtr GetHolder() const;
+  PoolWeakPtr GetPool() const;
 
  private:
   PoolPtr pool_;

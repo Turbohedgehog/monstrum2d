@@ -8,6 +8,8 @@
 
 #include <boost/bimap.hpp>
 
+#include "common/common_types.h"
+
 //#include "ecs/asset.h"
 
 namespace m2d {
@@ -59,7 +61,8 @@ class ComponentFixedStringField : public ComponentField {
 
 };
 
-//class ComponentFixedArray : public ComponentField {};
+// class ComponentFixedArray : public ComponentField {};
+// class ComponentSubcomponent : public ComponentField {};
 
 using ComponentFieldPtr = std::shared_ptr<ComponentField>;
 
@@ -75,12 +78,16 @@ class ComponentSchema {
     AppendField(std::make_shared<T>(std::forward<Ts>(args)...));
   }
 
+  ComponentPtr AllocateComponent(ECSWeakPtr ecs) const;
+  std::size_t GetDataSize() const;
+
  private:
   std::string name_;
 
   boost::bimap<std::string, std::size_t> field_index_map_;
   std::size_t field_counter_ = 0;
   std::map<std::size_t, ComponentFieldPtr> fields_;
+  std::size_t data_size_ = 0;
 };
 
 }  // namespace ecs

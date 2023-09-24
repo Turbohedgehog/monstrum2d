@@ -15,9 +15,8 @@ find_package(Python 3 COMPONENTS Interpreter Development)
 set(THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${Python_INCLUDE_DIRS})
 set(THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} ${Python_LIBRARIES})
 set(PYTHON3 python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
-message(PYTHON3 = ${PYTHON3})
 
-#yaml-cpp
+# yaml-cpp
 set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")
 set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml tools")
 set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
@@ -25,6 +24,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp)
 set(THIRD_PARTY_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/include)
 set (THIRD_PARTY_LIBS ${THIRD_PARTY_LIBS} yaml-cpp)
 
+# Boost
 set (Boost_USE_STATIC_LIBS ON)
 set (BOOST_ALL_DYN_LINK OFF)
 find_package(
@@ -34,6 +34,16 @@ find_package(
   program_options
   ${PYTHON3})
 
+if(Boost_FOUND)
+  set (
+    THIRD_PARTY_LIBS
+    ${THIRD_PARTY_LIBS}
+    Boost::boost
+    Boost::program_options
+    Boost::${PYTHON3})
+endif()
+
+# Scan and append project files
 file (
   GLOB_RECURSE
   PROJECT_SOURCE_FILES
@@ -51,15 +61,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
 )
-
-if(Boost_FOUND)
-  set (
-    THIRD_PARTY_LIBS
-    ${THIRD_PARTY_LIBS}
-    Boost::boost
-    Boost::program_options
-    Boost::${PYTHON3})
-endif()
 
 target_link_libraries(${PROJECT_NAME} ${THIRD_PARTY_LIBS})
 
