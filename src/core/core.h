@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <map>
+
+#include "common/common_types.h"
 
 #include "core/core_config.h"
 
@@ -22,9 +25,16 @@ class Core {
  
  private:
   Core();
+  ecs::HolderWeakPtr CreatreECSHolder();
+  void CreateInitialHolder();
+  void InitHolders();
+  void MainLoop();
 
   Status status_ = Status::Stopped;
   CoreConfig core_config_;
+
+  std::size_t esc_handler_counter_ = 0;
+  std::map<std::size_t, ecs::HolderPtr> esc_holders_;
 };
 
 }  // namespace m2d
