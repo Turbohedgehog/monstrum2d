@@ -17,8 +17,10 @@ class Holder : std::enable_shared_from_this<Holder> {
   Holder(std::size_t id);
 
   void AppendComponentSchema(const std::filesystem::path& schema_path);
+  void AppendSystems(const std::filesystem::path& systems_path);
   void Init();
   void Update(float delta);
+  bool IsActive() const;
   std::size_t GetECSCount() const;
 
  private:
@@ -30,6 +32,8 @@ class Holder : std::enable_shared_from_this<Holder> {
 
   std::size_t ecs_couter_ = 0;
   std::map<std::size_t, ECSPtr> ecs_;
+
+  py::ApplicationPtr py_application_;
 };
 
 }  // namespace ecs

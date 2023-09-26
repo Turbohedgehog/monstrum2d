@@ -42,7 +42,7 @@ const std::string& ComponentSchema::GetName() const {
 
 void ComponentSchema::AppendField(ComponentFieldPtr field) {
   const auto& field_name = field->GetName();
-  if (field_index_map_.left.find(field_name) == field_index_map_.left.end()) {
+  if (field_index_map_.left.find(field_name) != field_index_map_.left.end()) {
     throw std::runtime_error(
       (
         boost::format("[%s] Attempt to add a field with a duplicate name '%s'") %
