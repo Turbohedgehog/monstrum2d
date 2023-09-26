@@ -7,12 +7,15 @@
 #include "ecs/component_schema_loader.h"
 #include "ecs/component_shema.h"
 
+#include "py_api/application.h"
+
 namespace m2d {
 
 namespace ecs {
 
 Holder::Holder(std::size_t id)
-  : id_(id) {}
+  : id_(id)
+  , py_application_(new py::Application) {}
 
 void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
   auto schemas = ComponentSchemaLoader::LoadComponentSchemas(schema_path);
@@ -26,6 +29,10 @@ void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
     component_schemas_[component_type_counter_] = schema;
     ++component_type_counter_;
   }
+}
+
+void Holder::AppendSystems(const std::filesystem::path& systems_path) {
+  py_application_->CollectSystems(systems_path);
 }
 
 void Holder::Init() {

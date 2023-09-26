@@ -42,8 +42,8 @@ int Core::Run(int argc, char* argv[]) {
 
   status_ = Core::Status::Running;
 
-  std::cout << std::filesystem::current_path() << "\n";
-  std::cout << core_config_.GetName();
+  //std::cout << std::filesystem::current_path() << "\n";
+  //std::cout << core_config_.GetName();
 
   MainLoop();
 
@@ -70,6 +70,10 @@ void Core::CreateInitialHolder() {
   auto initial_holder = CreatreECSHolder().lock();
   for (const auto& schema_path : core_config_.GetECSComponentSchemaPaths()) {
     initial_holder->AppendComponentSchema(schema_path);
+  }
+
+  for (const auto& system_path : core_config_.GetECSSystemDeclarationPaths()) {
+    initial_holder->AppendSystems(system_path);
   }
 }
 
