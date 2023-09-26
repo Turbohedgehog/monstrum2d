@@ -4,10 +4,6 @@
 
 #include <boost/python.hpp>
 
-namespace m2d {
-
-namespace py {
-
 class SystemBase {
 
 };
@@ -15,8 +11,13 @@ class SystemBase {
 namespace bp = boost::python;
 
 BOOST_PYTHON_MODULE(Core) {
-  bp::class_<SystemBase, boost::noncopyable>("SystemBase", bp::no_init);
+  //bp::class_<SystemBase, boost::noncopyable>("SystemBase", bp::no_init);
+  bp::class_<SystemBase>("SystemBase");
 }
+
+namespace m2d {
+
+namespace py {
 
 }  // namespace py
 

@@ -1,5 +1,6 @@
 #include "py_api/application.h"
 
+#include <iostream>
 #include <fstream>
 
 #include "py_api/core_module.h"
@@ -14,10 +15,8 @@ std::size_t Application::instance_count_ = 0;
 
 Application::Application() {
   if (Application::instance_count_++ == 0) {
-    init_module_Core();
-    //PyImport_AppendInittab("Core", &init_module_Core);
+    PyImport_AppendInittab("Core", &PyInit_Core);
     Py_Initialize();
-    //boost::python::import("Core");
   }
 
   bp::object sys = bp::import("sys");
@@ -49,7 +48,11 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
     bp::list items = local.items();
     for (bp::ssize_t i = 0; i < bp::len(items); ++i) {
       bp::tuple key_value = bp::extract<bp::tuple>(items[i]);
-      bp::object item = key_value[1];
+      //bp::object item = key_value[1];
+      bp::object item_name = key_value[0];
+      std::string val = bp::extract<std::string>(item_name);
+      std::cout << val << "\n";
+      //bp::class_
       // todo: check if subclass SystemBase
     }
   } catch (boost::python::error_already_set& /*ex*/) {
