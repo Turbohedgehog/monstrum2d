@@ -19,9 +19,14 @@ Application::Application() {
     Py_Initialize();
   }
 
-  bp::object sys = bp::import("sys");
+  //bp::object sys = bp::import("sys");
   bp::object main = bp::import("__main__");
   global_ = bp::object(main.attr("__dict__"));
+  builtins_module_ = global_["__builtins__"];
+  inspect_module_ = bp::import("inspect");
+  bp::object core_module = bp::import("Core");
+  //system_base_class_ = core_module["SystemBase"];
+  system_base_class_ = core_module.attr("SystemBase");
 }
 
 Application::~Application() {
@@ -48,12 +53,22 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
     bp::list items = local.items();
     for (bp::ssize_t i = 0; i < bp::len(items); ++i) {
       bp::tuple key_value = bp::extract<bp::tuple>(items[i]);
-      //bp::object item = key_value[1];
       bp::object item_name = key_value[0];
+      bp::object item = key_value[1];
+      if (!inspect_module_.attr("isclass")(item)) {
+        continue;
+      }
+
+      if (!builtins_module_.attr("issubclass")(item, system_base_class_)) {
+        continue;
+      }
+
+      if (item == system_base_class_) {
+        continue;
+      }
+
       std::string val = bp::extract<std::string>(item_name);
       std::cout << val << "\n";
-      //bp::class_
-      // todo: check if subclass SystemBase
     }
   } catch (boost::python::error_already_set& /*ex*/) {
     PyErr_Print();

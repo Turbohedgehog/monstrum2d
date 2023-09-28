@@ -21,6 +21,9 @@ class Application {
   static std::size_t instance_count_;
 
   boost::python::object global_;
+  boost::python::object builtins_module_;
+  boost::python::object inspect_module_;
+  boost::python::object system_base_class_;
 };
 
 }  // namespace py
