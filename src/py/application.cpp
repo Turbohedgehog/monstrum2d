@@ -1,9 +1,9 @@
-#include "py_api/application.h"
+#include "py/application.h"
 
 #include <iostream>
 #include <fstream>
 
-#include "py_api/core_module.h"
+#include "py/core_module.h"
 
 namespace m2d {
 

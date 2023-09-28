@@ -7,7 +7,7 @@
 #include "ecs/component_schema_loader.h"
 #include "ecs/component_shema.h"
 
-#include "py_api/application.h"
+#include "py/application.h"
 
 namespace m2d {
 
