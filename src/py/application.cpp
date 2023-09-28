@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "py/core_module.h"
+#include "py/system_handler.h"
 
 namespace m2d {
 
@@ -19,14 +20,13 @@ Application::Application() {
     Py_Initialize();
   }
 
-  //bp::object sys = bp::import("sys");
   bp::object main = bp::import("__main__");
   global_ = bp::object(main.attr("__dict__"));
   builtins_module_ = global_["__builtins__"];
   inspect_module_ = bp::import("inspect");
   bp::object core_module = bp::import("Core");
-  //system_base_class_ = core_module["SystemBase"];
   system_base_class_ = core_module.attr("SystemBase");
+  system_handler_ = std::make_shared<SystemHandler>();
 }
 
 Application::~Application() {
@@ -67,13 +67,25 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
         continue;
       }
 
-      std::string val = bp::extract<std::string>(item_name);
-      std::cout << val << "\n";
+      std::string system_name = bp::extract<std::string>(item_name);
+      system_handler_->RegisterSystem(system_name, item);
     }
   } catch (boost::python::error_already_set& /*ex*/) {
     PyErr_Print();
     throw;
   }
+}
+
+void Application::InitSystems() {
+  system_handler_->InstantiateSystems();
+}
+
+void Application::Update(float delta) {
+  system_handler_->Update(delta);
+}
+
+bool Application::IsActive() const {
+  return system_handler_->IsActive();
 }
 
 }  // namespace py

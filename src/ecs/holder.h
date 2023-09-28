@@ -20,6 +20,7 @@ class Holder : std::enable_shared_from_this<Holder> {
   void AppendSystems(const std::filesystem::path& systems_path);
   void Init();
   void Update(float delta);
+  bool IsActive() const;
   std::size_t GetECSCount() const;
 
  private:

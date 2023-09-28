@@ -94,7 +94,7 @@ void Core::MainLoop() {
     auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(current - last_update).count() / 1000000.0;
     for (auto holder_it = esc_holders_.begin(); holder_it != esc_holders_.end();) {
       auto holder = holder_it->second;
-      if (holder->GetECSCount() == 0) {
+      if (!holder->IsActive()) {
         holder_it = esc_holders_.erase(holder_it);
       } else {
         holder->Update(deltaTime);

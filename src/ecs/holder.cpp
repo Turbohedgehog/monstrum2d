@@ -36,15 +36,19 @@ void Holder::AppendSystems(const std::filesystem::path& systems_path) {
 }
 
 void Holder::Init() {
-
+  py_application_->InitSystems();
 }
 
 void Holder::Update(float delta) {
-
+  py_application_->Update(delta);
 }
 
 std::size_t Holder::GetECSCount() const {
   return ecs_couter_;
+}
+
+bool Holder::IsActive() const {
+  return py_application_->IsActive();
 }
 
 } // namespace ecs

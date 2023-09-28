@@ -1,11 +1,9 @@
 from Core import SystemBase
 
-
 class MainMenuSystem(SystemBase):
-  def __init__(self):
+  def __init__(self, system_handler):
+    super().__init__(system_handler)
+    
     print("Hello from MainMenuSystem!")
-
-class Test:
-  ...
-
-print("Hello world!!!")
+    self.update = True
+    
