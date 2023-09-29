@@ -27,14 +27,11 @@ class SystemHandler {
   void InstantiateSystems();
   void Update(float delta);
   bool IsActive() const;
+  void OnUpdatePropertyChanged(bp::object system_object);
+  void RegisterHandlerClass();  
 
  private:
-  void RegisterHandlerClass();
-  void OnUpdatePropertyChanged(bp::object system_object);
-
   std::map<std::string, SystemHolder> systems_;
-
-  boost::python::object handler_class_;
 };
 
 }  // namespace py

@@ -1,3 +1,5 @@
+#if 0
+
 #include "py/core_module.h"
 
 namespace m2d {
@@ -26,3 +28,4 @@ void SystemBase::SetEnableUpdate(bool enable_update) {
 
 }  // namespace m2d
 
+#endif

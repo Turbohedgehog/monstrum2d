@@ -25,7 +25,7 @@ class SystemBase {
 
   void SetEnableUpdate(bool enable_update) {
     enable_update_ = enable_update;
-    system_handler_.attr("update_property_changed")(bp::ptr(this));
+    system_handler_.attr("update_property_changed")(this);
   }
 
  private:

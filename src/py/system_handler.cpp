@@ -1,6 +1,7 @@
 #include "py/system_handler.h"
 
 #include <stdexcept>
+#include <iostream>
 
 #include <boost/format.hpp>
 
@@ -34,7 +35,7 @@ void SystemHandler::RegisterSystem(const std::string& system_name, bp::object sy
 
 void SystemHandler::InstantiateSystems() {
   for (auto& [_, holder] : systems_) {
-    holder.instance = holder.source_class(handler_class_);
+    holder.instance = holder.source_class(this);
   }
 }
 
@@ -43,15 +44,13 @@ bool SystemHandler::IsActive() const {
 }
 
 void SystemHandler::OnUpdatePropertyChanged(bp::object system_object) {
-
+  bool b = bp::extract<bool>(system_object.attr("update"));
+  std::cout << b;
 }
 
 void SystemHandler::RegisterHandlerClass() {
-  
-  handler_class_ = bp::class_<SystemHandler>("SystemHandler");
-      //.def("update_property_changed", bp::make_function(boost::bind(&SystemHandler::OnUpdatePropertyChanged, this, boost::placeholders::_1)), (bp::arg("system")));
-      //.def("update_property_changed", bp::make_function(std::bind(&SystemHandler::OnUpdatePropertyChanged, this)));
-  handler_class_.attr("update_property_changed") = bp::make_function(boost::bind(&SystemHandler::OnUpdatePropertyChanged, this, boost::placeholders::_1));
+  bp::class_<SystemHandler>("SystemHandler")
+      .def("update_property_changed", &SystemHandler::OnUpdatePropertyChanged);
 }
 
 }  // namespace py

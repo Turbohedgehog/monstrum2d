@@ -77,6 +77,7 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
 }
 
 void Application::InitSystems() {
+  //system_handler_->RegisterHandlerClass();
   system_handler_->InstantiateSystems();
 }
 
