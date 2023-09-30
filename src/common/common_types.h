@@ -34,4 +34,11 @@ using PoolWeakPtr = std::weak_ptr<Pool>;
 
 }  // namespace ecs
 
+namespace py {
+
+class Application;
+using ApplicationPtr = std::shared_ptr<Application>;
+
+}  // namespace py
+
 }  // namespace m2d

@@ -120,12 +120,13 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
           );
         }
         
+        auto name_str = name.as<std::string>();
         if (field_type == "fixed_string") {
-          component_schema->AppendField(ParseFixedString(field_name, item.begin()->second));
+          component_schema->AppendField(ParseFixedString(name_str, item.begin()->second));
         } else if (field_type == "int") {
-          component_schema->AppendField(ParseInt(field_name, item.begin()->second));
+          component_schema->AppendField(ParseInt(name_str, item.begin()->second));
         } else if (field_type == "double") {
-          component_schema->AppendField(ParseDouble(field_name, item.begin()->second));
+          component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
         } else {
           throw std::runtime_error(
             (

@@ -72,6 +72,20 @@ void CoreConfig::LoadConfig() {
         }
       }
     }
+
+    auto system = ecs["system"];
+    if (system) {
+      if (!system.IsSequence()) {
+        throw std::runtime_error("ECS system section must be a sequence!");
+      }
+
+      for (auto val : system) {
+        auto declaration = val["declaration"];
+        if (declaration) {
+          ecs_system_declaration_paths_.emplace_back(declaration.as<std::string>());
+        }
+      }
+    }
   }
 
   auto fps = config_doc["fps"];
@@ -96,6 +110,10 @@ int CoreConfig::GetMinorVersion() const {
 
 const std::vector<std::string>& CoreConfig::GetECSComponentSchemaPaths() const {
   return ecs_component_schema_paths_;
+}
+
+const std::vector<std::string>& CoreConfig::GetECSSystemDeclarationPaths() const {
+  return ecs_system_declaration_paths_;
 }
 
 double CoreConfig::GetFPS() const {
