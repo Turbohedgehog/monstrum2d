@@ -8,4 +8,6 @@ class MainMenuSystem(SystemBase):
     self.update = True
     print("Roll back!")
     self.update = False
+
+print("Hello!")
     
