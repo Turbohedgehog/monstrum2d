@@ -27,11 +27,9 @@ class ComponentField {
   std::string name_;
 };
 
-//template <typename T, typename = std::enable_if_t<std::is_trivial_v<T>>>
 template <typename T>
 class ComponentPrimitiveField : public ComponentField {
  public:
-  //ComponentPrimitiveField(const std::string& name, const T& default_value = static_cast<T>(0))
   ComponentPrimitiveField(const std::string& name, const T& default_value = DefaultValue<T>::value)
     : ComponentField(name)
     , default_value_(default_value) {

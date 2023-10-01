@@ -1,5 +1,6 @@
 #include "ecs/holder.h"
 
+#include <iostream>
 #include <stdexcept>
 
 #include <boost/format.hpp>
@@ -14,8 +15,7 @@ namespace m2d {
 namespace ecs {
 
 Holder::Holder(std::size_t id)
-  : id_(id)
-  , py_application_(new py::Application) {}
+  : id_(id) {}
 
 void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
   auto schemas = ComponentSchemaLoader::LoadComponentSchemas(schema_path);
@@ -32,6 +32,7 @@ void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
 }
 
 void Holder::AppendSystems(const std::filesystem::path& systems_path) {
+  py_application_ = std::make_shared<py::Application>(shared_from_this());
   py_application_->CollectSystems(systems_path);
 }
 
@@ -48,7 +49,7 @@ std::size_t Holder::GetECSCount() const {
 }
 
 bool Holder::IsActive() const {
-  return py_application_->IsActive();
+  return !shutdown_ && py_application_->IsActive();
 }
 
 ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
@@ -63,6 +64,11 @@ ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
   }
 
   return schema_it->second;
+}
+
+void Holder::Shutdown() {
+  shutdown_ = true;
+  std::cout << "Holder shutdown!\n";
 }
 
 } // namespace ecs

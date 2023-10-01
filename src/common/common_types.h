@@ -39,6 +39,7 @@ namespace py {
 
 class Application;
 using ApplicationPtr = std::shared_ptr<Application>;
+using ApplicationWeakPtr = std::weak_ptr<Application>;
 
 }  // namespace py
 

@@ -12,7 +12,7 @@ namespace m2d {
 
 namespace ecs {
   
-class Holder : std::enable_shared_from_this<Holder> {
+class Holder : public std::enable_shared_from_this<Holder> {
  public:
   Holder(std::size_t id);
 
@@ -24,8 +24,12 @@ class Holder : std::enable_shared_from_this<Holder> {
   std::size_t GetECSCount() const;
   ComponentSchemaWeakPtr GetSchema(const std::string& schema_name) const;
 
+  void Shutdown();
+
  private:
   std::size_t id_;
+
+  bool shutdown_ = false;
 
   std::size_t component_type_counter_ = 0;
   boost::bimap<std::string, std::size_t> component_type_indexer_;
