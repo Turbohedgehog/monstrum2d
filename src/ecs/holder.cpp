@@ -7,6 +7,7 @@
 
 #include "ecs/component_schema_loader.h"
 #include "ecs/component_shema.h"
+#include "ecs/ecs.h"
 
 #include "py/application.h"
 
@@ -35,7 +36,7 @@ void Holder::AppendSystems(const std::filesystem::path& systems_path) {
   if (!py_application_) {
     py_application_ = std::make_shared<py::Application>(shared_from_this());
   }
-  
+
   py_application_->CollectSystems(systems_path);
 }
 
@@ -72,6 +73,21 @@ ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
 void Holder::Shutdown() {
   shutdown_ = true;
   std::cout << "Holder shutdown!\n";
+}
+
+ECSWeakPtr Holder::GetOrCreateECS(const std::string& ecs_name) {
+  auto it = ecs_names_.left.find(ecs_name);
+  if (it == ecs_names_.left.end()) {
+    ecs_names_.insert({ecs_name, ecs_couter_});
+    auto res = ecs_.emplace(
+        ecs_couter_, std::make_shared<ECS>(ecs_name, shared_from_this())
+    );
+    ++ecs_couter_;
+
+    return res.first->second;
+  }
+
+  return ecs_[it->second];
 }
 
 } // namespace ecs

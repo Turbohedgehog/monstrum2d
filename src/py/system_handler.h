@@ -11,6 +11,8 @@
 
 #include "common/common_types.h"
 
+#include "py/ecs_wrapper.h"
+
 
 namespace bp = boost::python;
 
@@ -37,6 +39,7 @@ class SystemHandler {
   void EnableSystemUpdate(bp::object system_object);
   void DisableSystemUpdate(bp::object system_object);
   void ShutdownHolder();
+  ECS GetOrCreateECS(const std::string& ecs_name);
 
  private:
   ecs::HolderWeakPtr ecs_holder_;

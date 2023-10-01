@@ -5,8 +5,9 @@ namespace m2d {
 
 namespace ecs {
   
-ECS::ECS(HolderWeakPtr ecs_holder)
-  : ecs_holder_(ecs_holder) {}
+ECS::ECS(const std::string& name, HolderWeakPtr ecs_holder)
+  : name_(name)
+  , ecs_holder_(ecs_holder) {}
 
 HolderWeakPtr ECS::GetHolder() const {
   return ecs_holder_;

@@ -9,4 +9,4 @@ ecs:
     - schemas: assets/player/player_ecs.yaml
   system:
     - declaration: assets/main_menu/main_menu_system.py
-    - declaration: assets/player/player_system.py
+    #- declaration: assets/player/player_system.py

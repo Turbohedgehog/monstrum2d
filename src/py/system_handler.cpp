@@ -90,6 +90,14 @@ void SystemHandler::ShutdownHolder() {
   ecs_holder_.lock()->Shutdown();
 }
 
+ECS SystemHandler::GetOrCreateECS(const std::string& ecs_name) {
+  auto ecs = ECS();
+  auto ecs_ptr = ecs_holder_.lock()->GetOrCreateECS(ecs_name);
+  ecs.SetECS(ecs_ptr);
+
+  return ecs;
+}
+
 void SystemHandler::RegisterHandlerClass() {
   bp::class_<SystemHandler>("SystemHandler")
       .def("enable_system_update", &SystemHandler::EnableSystemUpdate, bp::args(("system_object")))

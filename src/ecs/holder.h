@@ -26,6 +26,8 @@ class Holder : public std::enable_shared_from_this<Holder> {
 
   void Shutdown();
 
+  ECSWeakPtr GetOrCreateECS(const std::string& ecs_name);
+
  private:
   std::size_t id_;
 
@@ -36,6 +38,7 @@ class Holder : public std::enable_shared_from_this<Holder> {
   std::map<std::size_t, ComponentSchemaPtr> component_schemas_;
 
   std::size_t ecs_couter_ = 0;
+  boost::bimap<std::string, std::size_t> ecs_names_;
   std::map<std::size_t, ECSPtr> ecs_;
 
   py::ApplicationPtr py_application_;
