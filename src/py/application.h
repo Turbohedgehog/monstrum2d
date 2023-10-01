@@ -7,6 +7,8 @@
 
 #include <boost/python.hpp>
 
+#include "common/common_types.h"
+
 namespace m2d {
 
 namespace py {
@@ -15,7 +17,7 @@ class SystemHandler;
 
 class Application {
  public:
-  Application();
+  Application(ecs::HolderWeakPtr ecs_holder);
   ~Application();
 
   void CollectSystems(const std::filesystem::path& system_path);
@@ -26,6 +28,8 @@ class Application {
   
  private:
   static std::size_t instance_count_;
+
+  ecs::HolderWeakPtr ecs_holder_;
 
   boost::python::object global_;
   boost::python::object builtins_module_;

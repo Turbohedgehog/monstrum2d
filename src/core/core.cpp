@@ -84,14 +84,18 @@ void Core::InitHolders() {
 }
 
 void Core::MainLoop() {
+  //using namespace std::chrono_literals;
   auto fps = core_config_.GetFPS();
   auto delay = std::chrono::duration<double>(1. / fps);
+  //auto delay = std::chrono::duration<double>(0.0001);
   std::chrono::high_resolution_clock timer;
   auto last_update = timer.now();
   while (status_ == Status::Running && !esc_holders_.empty()) {
     std::this_thread::sleep_for(delay);
+    //std::this_thread::sleep_for(0);
     auto current = timer.now();
     auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(current - last_update).count() / 1000000.0;
+    last_update = current;
     for (auto holder_it = esc_holders_.begin(); holder_it != esc_holders_.end();) {
       auto holder = holder_it->second;
       if (!holder->IsActive()) {
