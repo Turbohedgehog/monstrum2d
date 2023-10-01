@@ -7,49 +7,19 @@
 #include "yaml-cpp/yaml.h"
 
 #include "ecs/component_shema.h"
+#include "common/default_value.h"
 
 namespace m2d {
 
 namespace ecs {
 
-ComponentFieldPtr ParseFixedString(const std::string& name, const YAML::Node& item) {
-  const static std::string kEmptyString = "";
-  auto size = item["size"];
-  if (!size) {
-    throw std::runtime_error(
-      (
-        boost::format("Fixedstring '%s' does not have size field") %
-          name
-      ).str()
-    );
-  }
-
-  auto size_value = size.as<int>();
-  if (size_value <= 0) {
-    throw std::runtime_error(
-      (
-        boost::format("Size of fixedstring '%s' must be greater than zero!") %
-          name
-      ).str()
-    );
-  }
-
+template<typename T>
+ComponentFieldPtr ParsePrimitive(const std::string& name, const YAML::Node& item) {
   auto default_value_node = item["default_value"];
-  auto default_value = default_value_node ? default_value_node.as<std::string>() : kEmptyString;
-  return std::make_shared<ComponentFixedStringField>(name, static_cast<std::size_t>(size_value), default_value);
-}
+  T default_value = default_value_node ? default_value_node.as<T>() : DefaultValue<T>::value;
+  return std::make_shared<ComponentPrimitiveField<T>>(name, default_value);
+};
 
-ComponentFieldPtr ParseInt(const std::string& name, const YAML::Node& item) {
-  auto default_value_node = item["default_value"];
-  auto default_value = default_value_node ? default_value_node.as<int>() : 0;
-  return std::make_shared<ComponentIntField>(name, default_value);
-}
-
-ComponentFieldPtr ParseDouble(const std::string& name, const YAML::Node& item) {
-  auto default_value_node = item["default_value"];
-  auto default_value = default_value_node ? default_value_node.as<double>() : 0.;
-  return std::make_shared<ComponentDoubleField>(name, default_value);
-}
 
 std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
   const std::filesystem::path& schemas_path) {
@@ -121,12 +91,15 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         }
         
         auto name_str = name.as<std::string>();
-        if (field_type == "fixed_string") {
-          component_schema->AppendField(ParseFixedString(name_str, item.begin()->second));
-        } else if (field_type == "int") {
-          component_schema->AppendField(ParseInt(name_str, item.begin()->second));
+        if (field_type == "int") {
+          component_schema->AppendField(ParsePrimitive<int>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseInt(name_str, item.begin()->second));
         } else if (field_type == "double") {
-          component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
+          component_schema->AppendField(ParsePrimitive<double>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
+        } else if (field_type == "string") {
+          component_schema->AppendField(ParsePrimitive<std::string>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
         } else {
           throw std::runtime_error(
             (

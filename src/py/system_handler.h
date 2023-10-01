@@ -2,10 +2,17 @@
 
 #include <string>
 #include <map>
+#include <set>
+#include <unordered_map>
 
 #define BOOST_PYTHON_STATIC_LIB
 
 #include <boost/python.hpp>
+
+#include "common/common_types.h"
+
+#include "py/py_ecs.h"
+#include "py/py_holder.h"
 
 
 namespace bp = boost::python;
@@ -23,15 +30,23 @@ struct SystemHolder {
 class SystemHandler {
  public:
   SystemHandler();
+  ~SystemHandler();
   void RegisterSystem(const std::string& system_name, bp::object system_class);
-  void InstantiateSystems();
+  void InstantiateSystems(ecs::HolderWeakPtr ecs_holder);
   void Update(float delta);
   bool IsActive() const;
-  void OnUpdatePropertyChanged(bp::object system_object);
-  void RegisterHandlerClass();  
+  //void OnEnableUpdatePropertyChanged(bp::object system_object);
+  void RegisterHandlerClass();
+  void EnableSystemUpdate(bp::object system_object);
+  void DisableSystemUpdate(bp::object system_object);
+  Holder GetHolder() const;
 
  private:
+  ecs::HolderWeakPtr ecs_holder_;
   std::map<std::string, SystemHolder> systems_;
+  std::map<PyObject*, bp::object> systems_to_update_;
+  //std::map<bp::object, bp::object> systems_to_update_;
+  //std::unordered_map<bp::object, bp::object> systems_to_update_;
 };
 
 }  // namespace py

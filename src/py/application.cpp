@@ -14,7 +14,8 @@ namespace bp = boost::python;
 
 std::size_t Application::instance_count_ = 0;
 
-Application::Application() {
+Application::Application(ecs::HolderWeakPtr ecs_holder)
+    : ecs_holder_(ecs_holder) {
   if (Application::instance_count_++ == 0) {
     PyImport_AppendInittab("Core", &PyInit_Core);
     Py_Initialize();
@@ -26,7 +27,9 @@ Application::Application() {
   inspect_module_ = bp::import("inspect");
   bp::object core_module = bp::import("Core");
   system_base_class_ = core_module.attr("SystemBase");
+
   system_handler_ = std::make_shared<SystemHandler>();
+  system_handler_->RegisterHandlerClass();
 }
 
 Application::~Application() {
@@ -77,8 +80,13 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
 }
 
 void Application::InitSystems() {
+  try {
   //system_handler_->RegisterHandlerClass();
-  system_handler_->InstantiateSystems();
+    system_handler_->InstantiateSystems(ecs_holder_);
+  } catch (boost::python::error_already_set& /*ex*/) {
+    PyErr_Print();
+    throw;
+  }
 }
 
 void Application::Update(float delta) {
