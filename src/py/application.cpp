@@ -21,15 +21,15 @@ Application::Application(ecs::HolderWeakPtr ecs_holder)
     Py_Initialize();
   }
 
-  system_handler_ = std::make_shared<SystemHandler>();
-  system_handler_->RegisterHandlerClass();
-
   bp::object main = bp::import("__main__");
   global_ = bp::object(main.attr("__dict__"));
   builtins_module_ = global_["__builtins__"];
   inspect_module_ = bp::import("inspect");
   bp::object core_module = bp::import("Core");
   system_base_class_ = core_module.attr("SystemBase");
+
+  system_handler_ = std::make_shared<SystemHandler>();
+  system_handler_->RegisterHandlerClass();
 }
 
 Application::~Application() {

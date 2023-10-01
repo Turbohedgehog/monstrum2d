@@ -46,10 +46,10 @@ void SystemHandler::InstantiateSystems(ecs::HolderWeakPtr ecs_holder) {
   ecs_holder_ = ecs_holder;
   for (auto& [_, holder] : systems_) {
     //holder.instance = holder.source_class(this);
-    //holder.instance = holder.source_class(bp::ptr(this));
-    holder.instance = holder.source_class();
-    std::string class_name = bp::extract<std::string>(holder.instance.attr("__class__").attr("__name__"));
-    holder.instance.attr("register_system_handler")(bp::ptr(this));
+    holder.instance = holder.source_class(bp::ptr(this));
+    //holder.instance = holder.source_class();
+    //std::string class_name = bp::extract<std::string>(holder.instance.attr("__class__").attr("__name__"));
+    //holder.instance.attr("register_system_handler")(bp::ptr(this));
     //holder.instance.attr("update")(0.1);
   }
 }

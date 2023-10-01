@@ -1,8 +1,8 @@
 from Core import SystemBase
 
 class MainMenuSystem(SystemBase):
-  def __init__(self):
-    super().__init__()
+  def __init__(self, system_handler):
+    super().__init__(system_handler)
     
     print("Hello from MainMenuSystem!")
     #self.enable_update = True
@@ -11,10 +11,6 @@ class MainMenuSystem(SystemBase):
     self.time = 0.0
     #print("Roll back!")
     #self.enable_update = False
-
-  def register_system_handler(self, system_handler):
-    super().register_system_handler(system_handler)
-
     self.system_handler.enable_system_update(self)
 
   def update(self, delta):

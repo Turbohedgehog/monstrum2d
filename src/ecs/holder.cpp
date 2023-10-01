@@ -32,7 +32,10 @@ void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
 }
 
 void Holder::AppendSystems(const std::filesystem::path& systems_path) {
-  py_application_ = std::make_shared<py::Application>(shared_from_this());
+  if (!py_application_) {
+    py_application_ = std::make_shared<py::Application>(shared_from_this());
+  }
+  
   py_application_->CollectSystems(systems_path);
 }
 
