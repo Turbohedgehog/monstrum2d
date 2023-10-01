@@ -22,6 +22,7 @@ class Holder : std::enable_shared_from_this<Holder> {
   void Update(float delta);
   bool IsActive() const;
   std::size_t GetECSCount() const;
+  ComponentSchemaWeakPtr GetSchema(const std::string& schema_name) const;
 
  private:
   std::size_t id_;

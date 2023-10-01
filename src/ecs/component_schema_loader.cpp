@@ -39,6 +39,13 @@ ComponentFieldPtr ParseFixedString(const std::string& name, const YAML::Node& it
   return std::make_shared<ComponentFixedStringField>(name, static_cast<std::size_t>(size_value), default_value);
 }
 
+template<typename T>
+ComponentFieldPtr ParsePrimitive(const std::string& name, const YAML::Node& item) {
+  auto default_value_node = item["default_value"];
+  T default_value = default_value_node ? default_value_node.as<T>() : T(0);
+  return std::make_shared<ComponentPrimitiveField<T>>(name, default_value);
+};
+
 ComponentFieldPtr ParseInt(const std::string& name, const YAML::Node& item) {
   auto default_value_node = item["default_value"];
   auto default_value = default_value_node ? default_value_node.as<int>() : 0;
@@ -124,9 +131,14 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         if (field_type == "fixed_string") {
           component_schema->AppendField(ParseFixedString(name_str, item.begin()->second));
         } else if (field_type == "int") {
-          component_schema->AppendField(ParseInt(name_str, item.begin()->second));
+          component_schema->AppendField(ParsePrimitive<int>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseInt(name_str, item.begin()->second));
         } else if (field_type == "double") {
-          component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
+          component_schema->AppendField(ParsePrimitive<double>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
+        } else if (field_type == "string") {
+          component_schema->AppendField(ParsePrimitive<std::string>(name_str, item.begin()->second));
+          //component_schema->AppendField(ParseDouble(name_str, item.begin()->second));
         } else {
           throw std::runtime_error(
             (

@@ -51,6 +51,20 @@ bool Holder::IsActive() const {
   return py_application_->IsActive();
 }
 
+ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
+  auto schema_id_it = component_type_indexer_.left.find(schema_name);
+  if (schema_id_it == component_type_indexer_.left.end()) {
+    return ComponentSchemaWeakPtr();
+  }
+
+  auto schema_it = component_schemas_.find(schema_id_it->second);
+  if (schema_it == component_schemas_.end()) {
+    return ComponentSchemaWeakPtr();
+  }
+
+  return schema_it->second;
+}
+
 } // namespace ecs
 
 }  // namespace m2d

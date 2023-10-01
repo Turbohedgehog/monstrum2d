@@ -1,11 +1,13 @@
 #include "ecs/component_shema.h"
 
+#include <algorithm>
 #include <fstream>
+#include <iterator>
 #include <stdexcept>
 
 #include <boost/format.hpp>
 
-//#include "ecs/component_data.h"
+#include "ecs/component_data.h"
 #include "ecs/component.h"
 
 namespace m2d {
@@ -63,8 +65,20 @@ std::size_t ComponentSchema::GetDataSize() const {
   return data_size_;
 }
 
-ComponentPtr ComponentSchema::AllocateComponent(ECSWeakPtr ecs) const {
+ComponentPtr ComponentSchema::AllocateComponent(ECSWeakPtr /*ecs*/) const {
   return ComponentPtr();
+}
+
+ComponentDataPtr ComponentSchema::CreateComponentData(ECSWeakPtr ecs) const {
+  auto struct_data = std::make_shared<StructComponentData>();
+  std::transform(
+      fields_.begin(),
+      fields_.end(),
+      std::back_inserter(struct_data->datalist),
+      [](const auto& pair){ return ComponentDataPtr(); }
+  );
+
+  return struct_data;
 }
 
 }  // namespace ecs

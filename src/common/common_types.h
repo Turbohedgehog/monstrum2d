@@ -22,11 +22,12 @@ class Component;
 using ComponentPtr = std::shared_ptr<Component>;
 using ComponentWeakPtr = std::weak_ptr<Component>;
 
-//using ComponentDataPtr = std::shared_ptr<char[]>;
-//using ComponentDataWeakPtr = std::weak_ptr<char[]>;
+class ComponentDataBase;
+using ComponentDataPtr = std::shared_ptr<ComponentDataBase>;
 
 class ComponentSchema;
 using ComponentSchemaPtr = std::shared_ptr<ComponentSchema>;
+using ComponentSchemaWeakPtr = std::weak_ptr<ComponentSchema>;
 
 class Pool;
 using PoolPtr = std::shared_ptr<Pool>;
