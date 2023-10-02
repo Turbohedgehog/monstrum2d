@@ -5,8 +5,6 @@
 
 #include <boost/format.hpp>
 
-#include "ecs/holder.h"
-
 namespace m2d {
 
 namespace py {
@@ -86,24 +84,20 @@ void SystemHandler::DisableSystemUpdate(bp::object system_object) {
   }
 }
 
-void SystemHandler::ShutdownHolder() {
-  ecs_holder_.lock()->Shutdown();
-}
-
-ECS SystemHandler::GetOrCreateECS(const std::string& ecs_name) {
-  auto ecs = ECS();
-  auto ecs_ptr = ecs_holder_.lock()->GetOrCreateECS(ecs_name);
-  ecs.SetECS(ecs_ptr);
-
-  return ecs;
-}
-
 void SystemHandler::RegisterHandlerClass() {
   bp::class_<SystemHandler>("SystemHandler")
       .def("enable_system_update", &SystemHandler::EnableSystemUpdate, bp::args(("system_object")))
       .def("disable_system_update", &SystemHandler::DisableSystemUpdate, bp::args(("system_object")))
-      .def("shutdown", &SystemHandler::ShutdownHolder)
+      //.def("shutdown", &SystemHandler::ShutdownHolder)
+      .def("get_holder", &SystemHandler::GetHolder)
   ;
+}
+
+Holder SystemHandler::GetHolder() const {
+  Holder holder;
+  holder.SetHolderPtr(ecs_holder_);
+
+  return holder;
 }
 
 }  // namespace py

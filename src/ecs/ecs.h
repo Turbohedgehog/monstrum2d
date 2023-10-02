@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "common/common_types.h"
 
@@ -13,7 +14,7 @@ namespace ecs {
 class ECS : public std::enable_shared_from_this<ECS> {
  public:
   ECS(const std::string& name, HolderWeakPtr ecs_holder);
-  EntityWeakPtr CreateEnity();
+  EntityWeakPtr CreateEnity(std::vector<std::string> components = {});
   HolderWeakPtr GetHolder() const;
   PoolWeakPtr GetPool() const;
 

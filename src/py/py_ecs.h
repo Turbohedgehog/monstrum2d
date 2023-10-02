@@ -6,6 +6,8 @@
 
 #include "common/common_types.h"
 
+#include "py/py_entity.h"
+
 namespace bp = boost::python;
 
 namespace m2d {
@@ -14,9 +16,10 @@ namespace py {
 
 class ECS {
  public:
-  void SetECS(ecs::ECSWeakPtr ecs);
-
   static bp::object CreateClassDeclaration();
+
+  void SetECS(ecs::ECSWeakPtr ecs);
+  Entity CreateEntity(bp::list component_names);
 
  private:
   ecs::ECSWeakPtr ecs_;

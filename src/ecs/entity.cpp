@@ -1,5 +1,8 @@
 #include "ecs/entity.h"
 
+#include "ecs/ecs.h"
+#include "ecs/holder.h"
+
 namespace m2d {
 
 namespace ecs {
@@ -16,8 +19,23 @@ ECSWeakPtr Entity::GetECS() const {
   return ecs_;
 }
 
-void Entity::AddComponents(std::initializer_list<std::string> components) {
+void Entity::AddComponents(const std::vector<std::string>& components) {
   
+}
+
+ComponentWeakPtr Entity::GetComponent(const std::string& component_name) const {
+  auto id = ecs_.lock()->GetHolder().lock()->GetComponentSchemaIdByName(component_name);
+  if (!id) {
+    return ComponentWeakPtr();
+  }
+
+  return GetComponentById(id.value());
+}
+
+ComponentWeakPtr Entity::GetComponentById(std::size_t component_id) const {
+  auto it = components_.find(component_id);
+
+  return it != components_.end() ? it->second : ComponentWeakPtr();
 }
 
 }  // namespace ecs

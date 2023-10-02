@@ -5,9 +5,16 @@
 #include <boost/python.hpp>
 
 #include "py/system_base.h"
-#include "py/ecs_wrapper.h"
+#include "py/py_ecs.h"
+#include "py/py_holder.h"
+#include "py/py_entity.h"
+#include "py/py_filter.h"
+#include "py/py_component.h"
 
 BOOST_PYTHON_MODULE(Core) {
   m2d::py::SystemBase::CreateClassDeclaration();
   m2d::py::ECS::CreateClassDeclaration();
+  m2d::py::Entity::CreateClassDeclaration();
+  m2d::py::Filter::CreateClassDeclaration();
+  m2d::py::Component::CreateClassDeclaration();
 }

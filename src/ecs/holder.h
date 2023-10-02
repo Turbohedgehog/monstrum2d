@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <optional>
 
 #include <common/common_types.h>
 #include <boost/bimap.hpp>
@@ -27,6 +28,7 @@ class Holder : public std::enable_shared_from_this<Holder> {
   void Shutdown();
 
   ECSWeakPtr GetOrCreateECS(const std::string& ecs_name);
+  std::optional<std::size_t> GetComponentSchemaIdByName(const std::string& schema_name) const;
 
  private:
   std::size_t id_;

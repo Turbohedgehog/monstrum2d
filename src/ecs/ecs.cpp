@@ -1,5 +1,6 @@
 #include "ecs/ecs.h"
 #include "ecs/pool.h"
+#include "ecs/entity.h"
 
 namespace m2d {
 
@@ -13,11 +14,13 @@ HolderWeakPtr ECS::GetHolder() const {
   return ecs_holder_;
 }
 
-EntityWeakPtr ECS::CreateEnity() {
+EntityWeakPtr ECS::CreateEnity(std::vector<std::string> components) {
   auto entity = pool_->AllocateEntity(entity_counter_, shared_from_this());
   ++entity_counter_;
 
   enities_[entity_counter_] = entity;
+
+  entity->AddComponents(std::move(components));
 
   return entity;
 }

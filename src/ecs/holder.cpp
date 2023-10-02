@@ -90,6 +90,15 @@ ECSWeakPtr Holder::GetOrCreateECS(const std::string& ecs_name) {
   return ecs_[it->second];
 }
 
+std::optional<std::size_t> Holder::GetComponentSchemaIdByName(const std::string& schema_name) const {
+  auto it = component_type_indexer_.left.find(schema_name);
+  if (it == component_type_indexer_.left.end()) {
+    return std::nullopt;
+  }
+
+  return it->second;
+}
+
 } // namespace ecs
 
 }  // namespace m2d
