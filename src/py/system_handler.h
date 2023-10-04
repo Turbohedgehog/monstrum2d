@@ -40,13 +40,12 @@ class SystemHandler {
   void EnableSystemUpdate(bp::object system_object);
   void DisableSystemUpdate(bp::object system_object);
   Holder GetHolder() const;
+  void SetBuiltinsModule(bp::object builtins_module);
 
  private:
   ecs::HolderWeakPtr ecs_holder_;
   std::map<std::string, SystemHolder> systems_;
   std::map<PyObject*, bp::object> systems_to_update_;
-  //std::map<bp::object, bp::object> systems_to_update_;
-  //std::unordered_map<bp::object, bp::object> systems_to_update_;
 };
 
 }  // namespace py

@@ -10,6 +10,10 @@ Component::Component(std::size_t type_id, std::size_t enity_id, ECSWeakPtr ecs, 
   , ecs_(ecs)
   , data_(data) {}
 
+ComponentDataPtr Component::GetData() const {
+  return data_;
+}
+
 }  // namespace ecs
 
 }  // namespace m2d

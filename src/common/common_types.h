@@ -22,7 +22,7 @@ class Component;
 using ComponentPtr = std::shared_ptr<Component>;
 using ComponentWeakPtr = std::weak_ptr<Component>;
 
-class ComponentDataBase;
+struct ComponentDataBase;
 using ComponentDataPtr = std::shared_ptr<ComponentDataBase>;
 
 class ComponentSchema;

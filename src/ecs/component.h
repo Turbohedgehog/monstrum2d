@@ -10,6 +10,8 @@ class Component {
  public:
   Component(std::size_t type_id, std::size_t enity_id, ECSWeakPtr ecs, ComponentDataPtr data);
 
+  ComponentDataPtr GetData() const;
+
  private:
   std::size_t type_id_ = 0;
   std::size_t enity_id_ = 0;

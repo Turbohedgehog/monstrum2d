@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <string>
+
 #define BOOST_PYTHON_STATIC_LIB
 
 #include <boost/python.hpp>
@@ -7,6 +10,8 @@
 #include "common/common_types.h"
 
 #include "py/py_ecs.h"
+
+#include "py/py_component_schema.h"
 
 namespace bp = boost::python;
 
@@ -16,16 +21,17 @@ namespace py {
 
 class Holder {
  public:
-  Holder();
-  ~Holder();
+  static bp::object CreateClassDeclaration();
+
   void SetHolderPtr(ecs::HolderWeakPtr holder);
   void Shutdown();
   ECS GetOrCreateECS(const std::string& ecs_name);
 
-  static bp::object CreateClassDeclaration();
+  boost::optional<ComponentSchema> GetComponentSchema(const std::string& schema_name);
 
  private:
   ecs::HolderWeakPtr holder_;
+  std::map<std::string, ComponentSchema> component_schemas_;
 
 };
 
