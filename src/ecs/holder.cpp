@@ -6,7 +6,7 @@
 #include <boost/format.hpp>
 
 #include "ecs/component_schema_loader.h"
-#include "ecs/component_shema.h"
+#include "ecs/component_schema.h"
 #include "ecs/ecs.h"
 
 #include "py/application.h"

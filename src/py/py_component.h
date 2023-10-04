@@ -17,6 +17,7 @@ class Component {
   static bp::object CreateClassDeclaration();
 
   void SetComponent(ecs::ComponentWeakPtr component);
+  ecs::ComponentWeakPtr GetComponent() const;
 
  private:
   ecs::ComponentWeakPtr component_;

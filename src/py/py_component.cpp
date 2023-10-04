@@ -13,6 +13,10 @@ void Component::SetComponent(ecs::ComponentWeakPtr component) {
   component_ = component;
 }
 
+ecs::ComponentWeakPtr Component::GetComponent() const {
+  return component_;
+}
+
 }  // namespace py
 
 }  // namespace m2d

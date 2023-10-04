@@ -6,7 +6,7 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include "ecs/component_shema.h"
+#include "ecs/component_schema.h"
 #include "common/default_value.h"
 
 namespace m2d {
@@ -31,8 +31,8 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
     throw std::invalid_argument("Wrong document format");
   }
 
-  for (const auto& component_shema_node : doc) {
-    auto component = component_shema_node["component"];
+  for (const auto& component_schema_node : doc) {
+    auto component = component_schema_node["component"];
     if (!component) {
       continue;
     }
@@ -100,7 +100,7 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         } else {
           throw std::runtime_error(
             (
-              boost::format("[%s] Component '%s' shema item has unknown name '%s'!") %
+              boost::format("[%s] Component '%s' schema item has unknown name '%s'!") %
                 schemas_path_str %
                 component_schema->GetName() %
                 field_type

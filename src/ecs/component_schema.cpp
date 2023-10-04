@@ -1,4 +1,4 @@
-#include "ecs/component_shema.h"
+#include "ecs/component_schema.h"
 
 #include <algorithm>
 #include <fstream>
