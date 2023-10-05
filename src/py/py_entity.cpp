@@ -10,8 +10,9 @@ namespace py {
 
 bp::object Entity::CreateClassDeclaration() {
   return bp::class_<Entity>("Entity")
-      .def("get_component", &Entity::GetComponent, bp::args(("component_name")))
-      .def("get_component_by_id", &Entity::GetComponentById, bp::args(("component_id")))
+      .def("get_component", &Entity::GetComponent, bp::args(("component_index")))
+      //.def("get_component", &Entity::GetComponent, bp::args(("component_name")))
+      //.def("get_component_by_id", &Entity::GetComponentById, bp::args(("component_id")))
   ;
 }
 
@@ -19,6 +20,23 @@ void Entity::SetEntity(ecs::EntityWeakPtr entity) {
   entity_ = entity;
 }
 
+bp::object Entity::GetComponent(bp::object index) const {
+  bp::extract<std::string> get_string(index);
+  auto component_ptr = get_string.check() ? 
+      entity_.lock()->GetComponent(get_string()) :
+      entity_.lock()->GetComponent(bp::extract<std::size_t>(index));
+
+  if (component_ptr.expired()) {
+    return bp::object();
+  }
+
+  Component component;
+  component.SetComponent(component_ptr);
+
+  return bp::object(component);
+}
+
+/*
 boost::optional<Component> Entity::GetComponent(const std::string& component_name) const {
   auto component_ptr = entity_.lock()->GetComponent(component_name);
   if (component_ptr.expired()) {
@@ -42,6 +60,7 @@ boost::optional<Component> Entity::GetComponentById(int component_id) const {
 
   return component;
 }
+*/
 
 }  // namespace py
 

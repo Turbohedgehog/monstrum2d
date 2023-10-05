@@ -37,19 +37,29 @@ void Entity::AddComponents(const std::vector<std::string>& components) {
   }
 }
 
-ComponentWeakPtr Entity::GetComponent(const std::string& component_name) const {
-  auto id = ecs_.lock()->GetHolder().lock()->GetComponentSchemaIdByName(component_name);
-  if (!id) {
+ComponentWeakPtr Entity::GetComponent(const StringIndex& index) const {
+  std::optional<std::size_t> component_idx;
+  std::visit(
+    visitor_overload {
+      [&component_idx](std::size_t idx) { component_idx = idx; },
+      [this, &component_idx](const std::string& str_name) {
+        auto id = ecs_.lock()->GetHolder().lock()->GetComponentSchemaIdByName(str_name);
+        component_idx = id;
+      },
+    },
+    index
+  );
+
+  if (!component_idx) {
     return ComponentWeakPtr();
   }
 
-  return GetComponentById(id.value());
-}
+  auto it = components_.find(component_idx.value());
+  if (it == components_.end()) {
+    return ComponentWeakPtr();
+  }
 
-ComponentWeakPtr Entity::GetComponentById(std::size_t component_id) const {
-  auto it = components_.find(component_id);
-
-  return it != components_.end() ? it->second : ComponentWeakPtr();
+  return it->second;  
 }
 
 }  // namespace ecs

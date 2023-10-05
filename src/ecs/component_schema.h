@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <type_traits>
-#include <variant>
 
 #include <boost/bimap.hpp>
 
@@ -19,8 +18,7 @@ namespace m2d {
 
 namespace ecs {
 
-using FieldIndex = std::variant<std::string, std::size_t>;
-using FieldIndexContainer = std::vector<FieldIndex>;
+using FieldIndexContainer = std::vector<StringIndex>;
 
 class ComponentField {
  public:
@@ -36,7 +34,9 @@ template <typename T>
 class ComponentPrimitiveField : public ComponentField {
  public:
   ComponentPrimitiveField(const T& default_value = DefaultValue<T>::value)
-    : default_value_(default_value) {}
+    : default_value_(default_value) {
+      volatile int zz = 0;
+    }
 
   const T& GetDefaultValue() const {
     return default_value_;

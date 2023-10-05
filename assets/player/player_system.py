@@ -12,6 +12,9 @@ class PlayerSystem(SystemBase):
     #print(f"self.player_component_schema.schema = {self.player_component_schema.schema}")
     #self.player_component_filter = self.player_system_ecs.get_or_register_filter("player_component")
     player_entity = self.player_system_ecs.create_entity(["player_component"])
-    #player_component = player_entity.get_component("player_component")
-    #self.player_component_schema.set_player_name(player_component, "Player")
-    
+    player_component = player_entity.get_component("player_component")
+    player_name = self.player_component_schema.get_field(player_component, "player_name")
+    print(f"old player_name = {player_name}")
+    self.player_component_schema.set_field(player_component, ["player_name"], "New Player name")
+    new_player_name = self.player_component_schema.get_field(player_component, 0)
+    print(f"new player_name = {new_player_name}")    

@@ -20,9 +20,11 @@ class ComponentSchema {
 
   void SetSchema(ecs::ComponentSchemaWeakPtr schema);
   bool Expired() const;
-  ecs::ComponentDataPtr AccessField(Component component, bp::tuple fields) const;
-  void SetField(Component component, bp::tuple fields, bp::object value);
-  bp::object GetField(Component component, bp::tuple fields);
+  ecs::ComponentDataPtr AccessField(Component component, bp::object field_path) const;
+  void SetField(Component component, bp::object field_path, bp::object value);
+  bp::object GetField(Component component, bp::object field_path);
+  //void SetField(Component component, bp::list field_path, bp::object value);
+  //bp::object GetField(Component component, bp::list field_path);
 
  private:
   ecs::ComponentSchemaWeakPtr schema_;

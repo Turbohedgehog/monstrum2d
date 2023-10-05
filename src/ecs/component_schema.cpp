@@ -15,9 +15,6 @@ namespace m2d {
 
 namespace ecs {
 
-template <typename... Ts> struct overload : Ts... { using Ts::operator()...; };
-template <typename... Ts> overload(Ts...) -> overload<Ts...>;
-
 void ComponentStruct::AppendField(std::string&& name, ComponentFieldPtr field) {
   if (field_index_map_.left.find(name) != field_index_map_.left.end()) {
     throw std::runtime_error(
@@ -29,10 +26,8 @@ void ComponentStruct::AppendField(std::string&& name, ComponentFieldPtr field) {
   }
 
   
-  fields_.push_back(field);
-  //fields_[field_counter_] = field;
-  //++field_counter_;
   field_index_map_.insert({std::move(name), fields_.size()});
+  fields_.push_back(field);
 }
 
 ComponentDataPtr ComponentStruct::AllocateData(ECSWeakPtr ecs) const {
@@ -61,10 +56,10 @@ ComponentDataPtr ComponentStruct::AccessToComponentData(
     return component_data;
   }
 
-  const FieldIndex& index = indices[idx];
+  const StringIndex& index = indices[idx];
   std::optional<std::size_t> field_idx;
   std::visit(
-    overload {
+    visitor_overload {
       [&field_idx](std::size_t field_index) { field_idx = field_index; },
       [this, &field_idx](const std::string& field_name) {
         auto it = field_index_map_.left.find(field_name);

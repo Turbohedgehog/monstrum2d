@@ -1,10 +1,17 @@
 #pragma once
 
+#include <variant>
 #include <memory>
+#include <string>
+
+template <typename... Ts> struct visitor_overload : Ts... { using Ts::operator()...; };
+template <typename... Ts> visitor_overload(Ts...) -> visitor_overload<Ts...>;
 
 namespace m2d {
 
 namespace ecs {
+
+using StringIndex = std::variant<std::string, std::size_t>;
 
 class Holder;
 using HolderPtr = std::shared_ptr<Holder>;

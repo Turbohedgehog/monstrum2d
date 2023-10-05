@@ -19,8 +19,8 @@ class Entity : public std::enable_shared_from_this<Entity> {
   ECSWeakPtr GetECS() const;
   void AddComponents(const std::vector<std::string>& components = {});
 
-  ComponentWeakPtr GetComponent(const std::string& component_name) const;
-  ComponentWeakPtr GetComponentById(std::size_t component_id) const;
+  ComponentWeakPtr GetComponent(const StringIndex& index) const;
+  //ComponentWeakPtr GetComponentById(std::size_t component_id) const;
 
  private:
   std::size_t id_;

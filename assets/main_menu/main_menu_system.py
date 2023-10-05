@@ -19,7 +19,7 @@ class MainMenuSystem(SystemBase):
     self.time += delta
     print(f"[{self.counter}] {delta} -> {self.time}")
 
-    if (self.counter >= 50):
+    if (self.counter >= 10):
       self.holder.shutdown()
       #self.system_handler.shutdown()
       #self.system_handler.disable_system_update(self)

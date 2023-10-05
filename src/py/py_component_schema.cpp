@@ -9,8 +9,8 @@ namespace py {
 
 bp::object ComponentSchema::CreateClassDeclaration() {
   return bp::class_<ComponentSchema>("ComponentSchema")
-      .def("set_field", &ComponentSchema::SetField, bp::args(("component"), ("fields"), ("value")))
-      .def("get_field", &ComponentSchema::GetField, bp::args(("component"), ("fields")))
+      .def("set_field", &ComponentSchema::SetField, (bp::arg("component"), bp::arg("field_path"), bp::arg("value")))
+      .def("get_field", &ComponentSchema::GetField, (bp::arg("component"), bp::arg("field_path")))
   ;
 }
 
@@ -22,17 +22,25 @@ bool ComponentSchema::Expired() const {
   return schema_.expired();
 }
 
-ecs::ComponentDataPtr ComponentSchema::AccessField(Component component, bp::tuple fields) const {
-  auto len = bp::len(fields);
+ecs::ComponentDataPtr ComponentSchema::AccessField(Component component, bp::object field_path) const {
+  auto object_to_index = [](bp::object obj) -> ecs::StringIndex {
+    bp::extract<std::string> get_string(obj);
+    return get_string.check() ?
+        ecs::StringIndex(get_string()) :
+        ecs::StringIndex(bp::extract<std::size_t>(obj));
+  };
+  
   ecs::FieldIndexContainer index_container;
-  for (decltype(len) i = 0; i < len; ++i) {
-    auto elem = fields[i];
-    bp::extract<std::string> get_string(elem);
-    if (get_string.check()) {
-      index_container.push_back(get_string());
-    } else {
-      index_container.push_back(bp::extract<std::size_t>(elem));
+  bp::extract<bp::list> get_list(field_path);
+  if (get_list.check()) {
+    auto field_path_list = get_list();
+    auto len = bp::len(field_path_list);
+    for (decltype(len) i = 0; i < len; ++i) {
+      auto elem = field_path_list[i];
+      index_container.push_back(object_to_index(elem));
     }
+  } else {
+    index_container.push_back(object_to_index(field_path));
   }
 
   return schema_.lock()->AccessToComponentData(component.GetComponent().lock(), index_container);
@@ -54,8 +62,8 @@ ecs::ComponentDataPtr ComponentSchema::AccessField(Component component, bp::tupl
   */
 }
 
-void ComponentSchema::SetField(Component component, bp::tuple fields, bp::object value) {
-  auto component_data = AccessField(component, fields);
+void ComponentSchema::SetField(Component component, bp::object field_path, bp::object value) {
+  auto component_data = AccessField(component, field_path);
   if (!component_data) {
     return;
   }
@@ -77,8 +85,8 @@ void ComponentSchema::SetField(Component component, bp::tuple fields, bp::object
   }
 }
 
-bp::object ComponentSchema::GetField(Component component, bp::tuple fields) {
-  auto component_data = AccessField(component, fields);
+bp::object ComponentSchema::GetField(Component component, bp::object field_path) {
+  auto component_data = AccessField(component, field_path);
   if (!component_data) {
     return bp::object();
   }

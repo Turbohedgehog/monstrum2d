@@ -3,5 +3,5 @@
     schema:
     - string:
         name: player_name
-        default: plater
+        default: player
   

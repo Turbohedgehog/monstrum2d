@@ -15,7 +15,7 @@ namespace ecs {
 
 template<typename T>
 ComponentFieldPtr ParsePrimitive(const YAML::Node& item) {
-  auto default_value_node = item["default_value"];
+  auto default_value_node = item["default"];
   T default_value = default_value_node ? default_value_node.as<T>() : DefaultValue<T>::value;
   return std::make_shared<ComponentPrimitiveField<T>>(default_value);
 };

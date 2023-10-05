@@ -21,8 +21,8 @@ class Entity {
 
   void SetEntity(ecs::EntityWeakPtr entity);
 
-  boost::optional<Component> GetComponent(const std::string& component_name) const;
-  boost::optional<Component> GetComponentById(int component_id) const;
+  bp::object GetComponent(bp::object index) const;
+  //bp::list GetComponents(bp::list indexes) const;
 
  private:
   ecs::EntityWeakPtr entity_;
