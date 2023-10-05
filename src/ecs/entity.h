@@ -1,6 +1,6 @@
 #pragma once
 
-#include <initializer_list>
+#include <vector>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,7 +17,10 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
   std::size_t GetId() const;
   ECSWeakPtr GetECS() const;
-  void AddComponents(std::initializer_list<std::string> components = {});
+  void AddComponents(const std::vector<std::string>& components = {});
+
+  ComponentWeakPtr GetComponent(const StringIndex& index) const;
+  //ComponentWeakPtr GetComponentById(std::size_t component_id) const;
 
  private:
   std::size_t id_;

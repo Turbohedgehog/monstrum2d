@@ -8,14 +8,14 @@ namespace ecs {
   
 class Component {
  public:
-  Component(std::size_t type_id, std::size_t enity_id, char* data, ECSWeakPtr ecs);
+  Component(std::size_t type_id, std::size_t enity_id, ComponentDataPtr data);
+
+  ComponentDataPtr GetData() const;
 
  private:
   std::size_t type_id_ = 0;
   std::size_t enity_id_ = 0;
-  char* data_ = nullptr;
-  Component* prev_component_ = nullptr;
-  Component* next_component_ = nullptr;
+  ComponentDataPtr data_;
   
 };
 
