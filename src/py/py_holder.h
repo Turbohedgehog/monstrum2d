@@ -27,7 +27,11 @@ class Holder {
   void Shutdown();
   ECS GetOrCreateECS(const std::string& ecs_name);
 
-  boost::optional<ComponentSchema> GetComponentSchema(const std::string& schema_name);
+  //boost::optional<ComponentSchema> GetComponentSchema(const std::string& schema_name);
+  //boost::optional<int> GetComponentSchemaId(const std::string& schema_name);
+
+  bp::object GetComponentSchema(const std::string& schema_name);
+  bp::object GetComponentSchemaId(const std::string& schema_name);
 
  private:
   ecs::HolderWeakPtr holder_;

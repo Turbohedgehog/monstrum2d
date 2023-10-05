@@ -30,20 +30,27 @@ ECS Holder::GetOrCreateECS(const std::string& ecs_name) {
   return ecs;
 }
 
-boost::optional<ComponentSchema> Holder::GetComponentSchema(const std::string& schema_name) {
+//boost::optional<int> Holder::GetComponentSchemaId(const std::string& schema_name) {
+bp::object Holder::GetComponentSchemaId(const std::string& schema_name) {
+  auto id = holder_.lock()->GetComponentSchemaIdByName(schema_name);
+  return id ? bp::object(static_cast<int>(id.value())) : bp::object();
+}
+
+bp::object Holder::GetComponentSchema(const std::string& schema_name) {
   auto it = component_schemas_.find(schema_name);
   
   if (it != component_schemas_.end()) {
     if (it->second.Expired()) {
       component_schemas_.erase(it);
     } else {
-      return it->second;
+      return bp::object(it->second);
     }
   }
 
   auto component_schema_ptr = holder_.lock()->GetComponentSchema(schema_name);
   if (component_schema_ptr.expired()) {
-    return boost::optional<ComponentSchema>();
+    //return boost::optional<ComponentSchema>();
+    return bp::object();
   }
 
   ComponentSchema component_schema;
@@ -52,7 +59,7 @@ boost::optional<ComponentSchema> Holder::GetComponentSchema(const std::string& s
 
   component_schemas_[schema_name] = component_schema;
 
-  return component_schema;
+  return bp::object(component_schema);
 }
 
 }  // namespace py

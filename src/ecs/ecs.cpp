@@ -20,7 +20,7 @@ EntityWeakPtr ECS::CreateEnity(const std::vector<std::string>& components) {
 
   enities_[entity_counter_] = entity;
 
-  entity->AddComponents(std::move(components));
+  entity->AddComponents(components);
 
   return entity;
 }

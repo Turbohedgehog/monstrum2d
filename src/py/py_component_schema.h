@@ -16,7 +16,7 @@ namespace py {
 
 class ComponentSchema {
  public:
-  static bp::object GetClassDeclaration();
+  static bp::object CreateClassDeclaration();
 
   void SetSchema(ecs::ComponentSchemaWeakPtr schema);
   bool Expired() const;

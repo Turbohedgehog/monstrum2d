@@ -8,8 +8,8 @@ class PlayerSystem(SystemBase):
 
     self.player_system_ecs = self.holder.get_or_create_ecs("PlayerSystem")
     self.player_component_schema = self.holder.get_component_schema("player_component")
-    print(f"{type(self.player_component_schema)}")
-    print(f"self.player_component_schema.schema = {self.player_component_schema.schema}")
+    #print(f"{type(self.player_component_schema)}")
+    #print(f"self.player_component_schema.schema = {self.player_component_schema.schema}")
     #self.player_component_filter = self.player_system_ecs.get_or_register_filter("player_component")
     player_entity = self.player_system_ecs.create_entity(["player_component"])
     #player_component = player_entity.get_component("player_component")

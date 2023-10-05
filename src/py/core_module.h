@@ -19,5 +19,5 @@ BOOST_PYTHON_MODULE(Core) {
   m2d::py::Filter::CreateClassDeclaration();
   m2d::py::Component::CreateClassDeclaration();
   m2d::py::Holder::CreateClassDeclaration();
-  m2d::py::ComponentSchema::GetClassDeclaration();
+  m2d::py::ComponentSchema::CreateClassDeclaration();
 }

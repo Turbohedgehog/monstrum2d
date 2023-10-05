@@ -7,6 +7,7 @@
 
 #include <boost/format.hpp>
 
+#include "ecs/ecs.h"
 #include "ecs/component_data.h"
 #include "ecs/component.h"
 

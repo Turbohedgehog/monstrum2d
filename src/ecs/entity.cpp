@@ -2,6 +2,8 @@
 
 #include "ecs/ecs.h"
 #include "ecs/holder.h"
+#include "ecs/component_schema.h"
+#include "ecs/pool.h"
 
 namespace m2d {
 
@@ -20,7 +22,19 @@ ECSWeakPtr Entity::GetECS() const {
 }
 
 void Entity::AddComponents(const std::vector<std::string>& components) {
-  
+  auto holder = ecs_.lock()->GetHolder().lock();
+  auto pool = ecs_.lock()->GetPool().lock();
+  for (const auto& component_name : components) {
+    auto schema_id = holder->GetComponentSchemaIdByName(component_name);
+    if (!schema_id) {
+      continue;
+    }
+
+    auto s_id = schema_id.value();
+    auto schema = holder->GetComponentSchema(s_id);
+    auto component_data = schema.lock()->CreateComponentData(ecs_);
+    components_[s_id] = pool->AllocateComponent(s_id, id_, component_data);
+  }
 }
 
 ComponentWeakPtr Entity::GetComponent(const std::string& component_name) const {

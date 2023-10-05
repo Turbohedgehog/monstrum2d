@@ -9,6 +9,7 @@ namespace ecs {
 class Pool {
  public:
   EntityPtr AllocateEntity(std::size_t id, ECSWeakPtr ecs);
+  ComponentPtr AllocateComponent(std::size_t type_id, std::size_t enity_id, ComponentDataPtr data);
 };
 
 

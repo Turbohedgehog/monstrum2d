@@ -99,14 +99,15 @@ std::optional<std::size_t> Holder::GetComponentSchemaIdByName(const std::string&
   return it->second;
 }
 
+ComponentSchemaWeakPtr Holder::GetComponentSchema(std::size_t schema_id) const {
+  auto it = component_schemas_.find(schema_id);
+  return it != component_schemas_.end() ? it->second : ComponentSchemaWeakPtr();
+}
+
 ComponentSchemaWeakPtr Holder::GetComponentSchema(const std::string& schema_name) const {
   auto id = GetComponentSchemaIdByName(schema_name);
-  if (!id) {
-    return ComponentSchemaWeakPtr();
-  }
 
-  auto it = component_schemas_.find(id.value());
-  return it != component_schemas_.end() ? it->second : ComponentSchemaWeakPtr();
+  return id ? GetComponentSchema(id.value()) : ComponentSchemaWeakPtr();
 }
 
 } // namespace ecs

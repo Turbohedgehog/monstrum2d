@@ -7,13 +7,11 @@ namespace m2d {
 
 namespace py {
 
-bp::object ComponentSchema::GetClassDeclaration() {
-  static bp::object schema_class = bp::class_<ComponentSchema>("ComponentSchema")
+bp::object ComponentSchema::CreateClassDeclaration() {
+  return bp::class_<ComponentSchema>("ComponentSchema")
       .def("set_field", &ComponentSchema::SetField, bp::args(("component"), ("fields"), ("value")))
       .def("get_field", &ComponentSchema::GetField, bp::args(("component"), ("fields")))
   ;
-
-  return schema_class;
 }
 
 void ComponentSchema::SetSchema(ecs::ComponentSchemaWeakPtr schema) {

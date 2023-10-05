@@ -29,6 +29,7 @@ class Holder : public std::enable_shared_from_this<Holder> {
 
   ECSWeakPtr GetOrCreateECS(const std::string& ecs_name);
   std::optional<std::size_t> GetComponentSchemaIdByName(const std::string& schema_name) const;
+  ComponentSchemaWeakPtr GetComponentSchema(std::size_t schema_id) const;
   ComponentSchemaWeakPtr GetComponentSchema(const std::string& schema_name) const;
 
  private:
