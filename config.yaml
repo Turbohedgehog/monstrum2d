@@ -2,11 +2,13 @@ name: Monstrum2D!
 version:
   major: 0
   minor: 1
-fps: 60
+fps: 30.0
 ecs:
   component:
     - schemas: assets/main_menu/main_menu_ecs.yaml
     - schemas: assets/player/player_ecs.yaml
+    - schemas: assets/game/keyboard_component.yaml
   system:
     - declaration: assets/main_menu/main_menu_system.py
     - declaration: assets/player/player_system.py
+    - declaration: assets/game/gameplay.py

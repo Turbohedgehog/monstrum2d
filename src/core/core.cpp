@@ -1,11 +1,14 @@
 #include "core/core.h"
 
+//#include <unistd.h>
+
 #include <chrono>
 #include <iostream>
 #include <filesystem>
 #include <thread>
 
 #include "ecs/holder.h"
+#include "terminal/terminal.h"
 
 namespace m2d {
 
@@ -27,6 +30,7 @@ int Core::Run(int argc, char* argv[]) {
   try {
     core_config_.LoadConfig();
   } catch (const std::exception& ex) {
+    //hi::Terminal::GetInstance() << "asd";
     std::cerr << "Cannot load config by reason: " << ex.what() << "\n";
     return 2;
   }
@@ -41,9 +45,6 @@ int Core::Run(int argc, char* argv[]) {
   InitHolders();
 
   status_ = Core::Status::Running;
-
-  //std::cout << std::filesystem::current_path() << "\n";
-  //std::cout << core_config_.GetName();
 
   MainLoop();
 
@@ -86,16 +87,25 @@ void Core::InitHolders() {
 void Core::MainLoop() {
   //using namespace std::chrono_literals;
   auto fps = core_config_.GetFPS();
-  auto delay = std::chrono::duration<double>(1. / fps);
-  //auto delay = std::chrono::duration<double>(0.0001);
+  auto delay = std::chrono::duration<double>(1./fps);
   std::chrono::high_resolution_clock timer;
   auto last_update = timer.now();
+  auto current = timer.now();
+  auto start = last_update;
   while (status_ == Status::Running && !esc_holders_.empty()) {
-    std::this_thread::sleep_for(delay);
-    //std::this_thread::sleep_for(0);
-    auto current = timer.now();
-    auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(current - last_update).count() / 1000000.0;
-    last_update = current;
+    auto delta = current - last_update;
+    auto sleep_duration = std::chrono::duration(delay - delta);
+    if (sleep_duration < std::chrono::milliseconds::zero()) {
+      sleep_duration = std::chrono::milliseconds::zero();
+    }
+    //std::this_thread::sleep_for(sleep_duration);
+    auto sleep_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(sleep_duration).count();
+    hi::Terminal::GetInstance().Sleep(sleep_milliseconds);
+    current = timer.now();
+    auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(current - last_update).count() / 1000.0;
+
+    hi::Terminal::GetInstance().Update(deltaTime);
+    
     for (auto holder_it = esc_holders_.begin(); holder_it != esc_holders_.end();) {
       auto holder = holder_it->second;
       if (!holder->IsActive()) {
@@ -105,7 +115,14 @@ void Core::MainLoop() {
         ++holder_it;
       }
     }
+    last_update = current;
   }
+
+  hi::Terminal::GetInstance().Shutdown();
+
+
+  auto end = std::chrono::duration_cast<std::chrono::milliseconds>(timer.now() - start).count() / 1000.0;
+  std::cout << "Duration = " << end << "\n";
 }
 
 }  // namespace m2d

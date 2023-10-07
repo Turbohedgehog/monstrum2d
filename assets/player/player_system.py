@@ -5,7 +5,6 @@ class PlayerSystem(SystemBase):
     super().__init__(system_handler)
 
     self.holder = system_handler.get_holder()
-
     self.player_system_ecs = self.holder.get_or_create_ecs("PlayerSystem")
     self.player_component_schema = self.holder.get_component_schema("player_component")
     #print(f"{type(self.player_component_schema)}")

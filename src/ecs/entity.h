@@ -20,7 +20,7 @@ class Entity : public std::enable_shared_from_this<Entity> {
   void AddComponents(const std::vector<std::string>& components = {});
 
   ComponentWeakPtr GetComponent(const StringIndex& index) const;
-  //ComponentWeakPtr GetComponentById(std::size_t component_id) const;
+  bool Tick(float delta);
 
  private:
   std::size_t id_;

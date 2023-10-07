@@ -34,7 +34,7 @@ class Core {
   CoreConfig core_config_;
 
   std::size_t esc_handler_counter_ = 0;
-  std::map<std::size_t, ecs::HolderPtr> esc_holders_;
+  std::map<std::size_t, ecs::HolderPtr>   esc_holders_;
 };
 
 }  // namespace m2d

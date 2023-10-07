@@ -3,17 +3,13 @@
 #include <map>
 #include <string>
 
-#define BOOST_PYTHON_STATIC_LIB
-
-#include <boost/python.hpp>
+#include "py/py.h"
 
 #include "common/common_types.h"
 
 #include "py/py_ecs.h"
 
 #include "py/py_component_schema.h"
-
-namespace bp = boost::python;
 
 namespace m2d {
 

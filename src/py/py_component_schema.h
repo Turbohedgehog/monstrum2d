@@ -1,14 +1,10 @@
 #pragma once
 
-#define BOOST_PYTHON_STATIC_LIB
-
-#include <boost/python.hpp>
+#include "py/py.h"
 
 #include "common/common_types.h"
 
 #include "py/py_component.h"
-
-namespace bp = boost::python;
 
 namespace m2d {
 
@@ -23,8 +19,6 @@ class ComponentSchema {
   ecs::ComponentDataPtr AccessField(Component component, bp::object field_path) const;
   void SetField(Component component, bp::object field_path, bp::object value);
   bp::object GetField(Component component, bp::object field_path);
-  //void SetField(Component component, bp::list field_path, bp::object value);
-  //bp::object GetField(Component component, bp::list field_path);
 
  private:
   ecs::ComponentSchemaWeakPtr schema_;

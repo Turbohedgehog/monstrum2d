@@ -1,11 +1,9 @@
 #pragma once
 
-#define BOOST_PYTHON_STATIC_LIB
-
 #include <filesystem>
 #include <memory>
 
-#include <boost/python.hpp>
+#include "py/py.h"
 
 #include "common/common_types.h"
 

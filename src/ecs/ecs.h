@@ -17,6 +17,7 @@ class ECS : public std::enable_shared_from_this<ECS> {
   EntityWeakPtr CreateEnity(const std::vector<std::string>& components = {});
   HolderWeakPtr GetHolder() const;
   PoolWeakPtr GetPool() const;
+  void Tick(float delta);
 
  private:
   std::string name_;

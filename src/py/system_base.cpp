@@ -14,7 +14,7 @@ bp::object SystemBase::GetSystemHandler() const {
 }
 
 bp::object SystemBase::CreateClassDeclaration() {
-  return bp::class_<m2d::py::SystemBase>("SystemBase", bp::init<bp::object>())
+  return bp::class_<m2d::py::SystemBase>("SystemBase", bp::init<bp::object>(bp::args("system_handler")))
       .def("update", &m2d::py::SystemBase::Update, bp::args("delta"))
       .add_property("system_handler", &m2d::py::SystemBase::GetSystemHandler)
   ;
