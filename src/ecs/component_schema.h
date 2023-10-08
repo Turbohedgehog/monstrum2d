@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <optional>
+#include <variant>
 
 #include <boost/bimap.hpp>
 
@@ -34,9 +36,7 @@ template <typename T>
 class ComponentPrimitiveField : public ComponentField {
  public:
   ComponentPrimitiveField(const T& default_value = DefaultValue<T>::value)
-    : default_value_(default_value) {
-      volatile int zz = 0;
-    }
+    : default_value_(default_value) {}
 
   const T& GetDefaultValue() const {
     return default_value_;
@@ -88,9 +88,7 @@ class ComponentStruct : public ComponentField {
 
  private:
   boost::bimap<std::string, std::size_t> field_index_map_;
-  //std::size_t field_counter_ = 0;
   std::vector<ComponentFieldPtr>  fields_;
-  //std::map<std::size_t, ComponentFieldPtr> fields_;
 };
 
 using ComponentStructPtr = std::shared_ptr<ComponentStruct>;
@@ -106,8 +104,11 @@ class ComponentSchema {
       ComponentPtr component,
       const FieldIndexContainer& indices) const;
 
+  void SetLifetime(ComponentLifetime lifetime);
+
  private:
   std::string name_;
+  std::optional<ComponentLifetime> lifetime_;
 
   ComponentStructPtr root_;
 };

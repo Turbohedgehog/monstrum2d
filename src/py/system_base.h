@@ -1,10 +1,6 @@
 #pragma once
 
-#define BOOST_PYTHON_STATIC_LIB
-
-#include <boost/python.hpp>
-
-namespace bp = boost::python;
+#include "py/py.h"
 
 namespace m2d {
 

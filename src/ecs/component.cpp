@@ -13,6 +13,30 @@ ComponentDataPtr Component::GetData() const {
   return data_;
 }
 
+bool Component::Tick(float delta) {
+  if (!lifetime_) {
+    return true;
+  }
+
+  bool res = true;
+
+  std::visit(
+    visitor_overload {
+      [&res, &delta](double& timer) constexpr {
+        timer -= delta;
+        res = timer >= 0.;
+      },
+      [&res](int& ticks) constexpr {
+        --ticks;
+        res = ticks > 0;
+      }
+    },
+    lifetime_.value()
+  );
+
+  return res;
+}
+
 }  // namespace ecs
 
 }  // namespace m2d

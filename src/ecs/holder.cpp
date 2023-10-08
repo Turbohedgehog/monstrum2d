@@ -8,6 +8,7 @@
 #include "ecs/component_schema_loader.h"
 #include "ecs/component_schema.h"
 #include "ecs/ecs.h"
+#include "ecs/systems/service_system.h"
 
 #include "py/application.h"
 
@@ -41,11 +42,44 @@ void Holder::AppendSystems(const std::filesystem::path& systems_path) {
 }
 
 void Holder::Init() {
+  //RegisterServiceSystem();
+
   py_application_->InitSystems();
 }
 
+void Holder::RegisterServiceSystem() {
+  AppendSystem(std::make_shared<ServiceSystem>(shared_from_this()));
+}
+
+void Holder::AppendSystem(SystemPtr system) {
+  const auto& system_name = system->GetName();
+  auto it = system_names_.left.find(system_name);
+  if (it != system_names_.left.end()) {
+    throw std::runtime_error(
+      (boost::format("Cannot append system '%s'. It is already exists") % system_name)
+      .str()
+    );
+  }
+
+  system_names_.insert({system_name, system_counter_});
+  systems_[system_counter_] = system;
+  ++system_counter_;
+  system->OnSystemRegistered();
+}
+
 void Holder::Update(float delta) {
+  for (auto it = ecs_.begin(); it != ecs_.end(); ++it) {
+    it->second->Tick(delta);
+  }
+
   py_application_->Update(delta);
+  UpdateSystems(delta);
+}
+
+void Holder::UpdateSystems(float delta) {
+  for (auto& [_, system_ptr] : systems_) {
+    system_ptr->Update(delta);
+  }
 }
 
 std::size_t Holder::GetECSCount() const {

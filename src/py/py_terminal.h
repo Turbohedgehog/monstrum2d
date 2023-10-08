@@ -2,15 +2,17 @@
 
 #include "py/py.h"
 
-#include "common/common_types.h"
+#include "py/py_screen.h"
 
 namespace m2d {
 
 namespace py {
 
-class Filter {
+class Terminal {
  public:
   static bp::object CreateClassDeclaration();
+  static Screen CreateScreen();
+
 };
 
 }  // namespace py

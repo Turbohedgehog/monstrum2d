@@ -12,6 +12,7 @@ namespace m2d {
 namespace ecs {
 
 using StringIndex = std::variant<std::string, std::size_t>;
+using ComponentLifetime = std::variant<double, int>;
 
 class Holder;
 using HolderPtr = std::shared_ptr<Holder>;
@@ -24,6 +25,9 @@ using ECSWeakPtr = std::weak_ptr<ECS>;
 class Entity;
 using EntityPtr = std::shared_ptr<Entity>;
 using EntityWeakPtr = std::weak_ptr<Entity>;
+
+class System;
+using SystemPtr = std::shared_ptr<System>;
 
 class Component;
 using ComponentPtr = std::shared_ptr<Component>;

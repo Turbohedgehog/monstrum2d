@@ -29,6 +29,16 @@ PoolWeakPtr ECS::GetPool() const {
   return pool_;
 }
 
+void ECS::Tick(float delta) {
+  for (auto it = enities_.begin(); it != enities_.end();) {
+    if (!it->second->Tick(delta)) {
+      it = enities_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 }  // namespace ecs
 
 }  // namespace m2d

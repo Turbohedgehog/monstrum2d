@@ -134,6 +134,10 @@ ComponentDataPtr ComponentSchema::AccessToComponentData(
   );
 }
 
+void ComponentSchema::SetLifetime(ComponentLifetime lifetime) {
+  lifetime_ = lifetime;
+}
+
 }  // namespace ecs
 
 }  // namespace m2d

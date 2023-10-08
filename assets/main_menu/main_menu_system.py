@@ -17,12 +17,15 @@ class MainMenuSystem(SystemBase):
   def update(self, delta):
     self.counter += 1
     self.time += delta
-    print(f"[{self.counter}] {delta} -> {self.time}")
+    #print(f"[{self.counter}] {delta} -> {self.time}")
 
-    if (self.counter >= 10):
+    '''
+    if (self.time >= 1.0):
+      print("shutdown!")
       self.holder.shutdown()
       #self.system_handler.shutdown()
       #self.system_handler.disable_system_update(self)
+    '''
 
 
 print("Hello!")

@@ -43,7 +43,24 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
     }
 
     auto component_schema = std::make_shared<ComponentSchema>(name.as<std::string>());
-    schemas.push_back(component_schema);
+    //schemas.push_back(component_schema);
+
+    auto lifetime = component["lifetime"];
+    if (lifetime) {
+      if (auto ticks = lifetime["ticks"]) {
+        if (!ticks.IsDefined() || !ticks.IsScalar()) {
+          throw std::runtime_error(
+            (
+              boost::format("[%s] Component '%s' schema has wrong lifetime value!") %
+                schemas_path_str %
+                component_schema->GetName()
+            ).str()
+          );
+        }
+
+        component_schema->SetLifetime(ticks.as<int>());
+      }
+    }
 
     auto schema = component["schema"];
     if (!schema) {
@@ -120,6 +137,8 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         );
       }
     }
+
+    schemas.push_back(component_schema);
   }
 
   return schemas;

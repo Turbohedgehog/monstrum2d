@@ -32,7 +32,12 @@ class Holder : public std::enable_shared_from_this<Holder> {
   ComponentSchemaWeakPtr GetComponentSchema(std::size_t schema_id) const;
   ComponentSchemaWeakPtr GetComponentSchema(const std::string& schema_name) const;
 
+  void AppendSystem(SystemPtr system);
+
  private:
+  void RegisterServiceSystem();
+  void UpdateSystems(float delta);
+
   std::size_t id_;
 
   bool shutdown_ = false;
@@ -44,6 +49,10 @@ class Holder : public std::enable_shared_from_this<Holder> {
   std::size_t ecs_couter_ = 0;
   boost::bimap<std::string, std::size_t> ecs_names_;
   std::map<std::size_t, ECSPtr> ecs_;
+
+  std::size_t system_counter_ = 0;
+  boost::bimap<std::string, std::size_t> system_names_;
+  std::map<std::size_t, SystemPtr> systems_;
 
   py::ApplicationPtr py_application_;
 };

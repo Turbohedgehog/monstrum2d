@@ -4,6 +4,7 @@
 #include "ecs/holder.h"
 #include "ecs/component_schema.h"
 #include "ecs/pool.h"
+#include "ecs/component.h"
 
 namespace m2d {
 
@@ -60,6 +61,18 @@ ComponentWeakPtr Entity::GetComponent(const StringIndex& index) const {
   }
 
   return it->second;  
+}
+
+bool Entity::Tick(float delta) {
+  for (auto it = components_.begin(); it != components_.end();) {
+    if (!it->second->Tick(delta)) {
+      it = components_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return !components_.empty();
 }
 
 }  // namespace ecs

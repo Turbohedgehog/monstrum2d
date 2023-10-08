@@ -1,3 +1,6 @@
 [submodule "yaml-cpp"]
 	path = yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "PDCurses"]
+	path = PDCurses
+	url = git@github.com:wmcbrine/PDCurses.git
