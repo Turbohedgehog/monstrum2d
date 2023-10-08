@@ -12,6 +12,7 @@ class Terminal {
  public:
   static bp::object CreateClassDeclaration();
   static Screen CreateScreen();
+  static bp::object GetScreen(int id);
 
 };
 

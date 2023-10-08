@@ -14,7 +14,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - run: sudo apt-get update && sudo apt-get install libboost-all-dev python3.9 python3-dev -y
+      #- run: sudo apt-get update && sudo apt-get install libboost-all-dev python3.9 python3-dev libxt-dev libx11-dev libxmu-dev libxpm-dev libxaw7-dev -y
+      - run: sudo apt-get update && sudo apt-get install libboost-all-dev python3.9 python3-dev libncurses5-dev libncursesw5-dev -y
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
       - run: cmake --build . --target package

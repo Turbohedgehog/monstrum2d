@@ -28,7 +28,20 @@ using IntComponentData = ComponentPrimitiveData<int>;
 using DoubleComponentData = ComponentPrimitiveData<double>;
 using StringComponentData = ComponentPrimitiveData<std::string>;
 
-struct StructComponentData  : ComponentDataBase {
+struct ArrayComponentData : ComponentDataBase {
+  std::vector<ComponentDataPtr> data;
+  ComponentFieldPtr content_field;
+  ECSWeakPtr ecs;
+  ComponentFiledType GetType() const override {
+    return ComponentFiledType::Array;
+  }
+
+  void Resize(std::size_t size);
+  void Insert(std::size_t idx, std::size_t count = 1);
+  void Remove(std::size_t idx, std::size_t count = 1);
+};
+
+struct StructComponentData : ComponentDataBase {
   std::vector<ComponentDataPtr> data;
 
   ComponentFiledType GetType() const override {

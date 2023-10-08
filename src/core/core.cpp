@@ -30,7 +30,6 @@ int Core::Run(int argc, char* argv[]) {
   try {
     core_config_.LoadConfig();
   } catch (const std::exception& ex) {
-    //hi::Terminal::GetInstance() << "asd";
     std::cerr << "Cannot load config by reason: " << ex.what() << "\n";
     return 2;
   }

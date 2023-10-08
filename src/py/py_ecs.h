@@ -5,6 +5,7 @@
 #include "common/common_types.h"
 
 #include "py/py_entity.h"
+#include "py/py_filter.h"
 
 namespace m2d {
 
@@ -16,6 +17,7 @@ class ECS {
 
   void SetECS(ecs::ECSWeakPtr ecs);
   Entity CreateEntity(bp::list component_names);
+  bp::object GetOrCreateFilter(bp::list component_names);
 
  private:
   ecs::ECSWeakPtr ecs_;

@@ -1,0 +1,59 @@
+- component:
+    name: gameplay_state
+    schema:
+        - int:
+            name: state
+            default: 0
+        - int:
+            name: screen_id
+
+- component:
+    name: surviver
+    schema:
+        - double:
+            name: key_down_timer
+        - int:
+            name: move_direction
+
+- component:
+    name: coordinate
+    schema:
+        - int:
+            name: x
+        - int:
+            name: y
+
+- component:
+    name: map_tile
+    schema:
+        - int:
+            name: view
+        - int:
+            name: color_pair
+        - int:
+            name: type
+
+- component:
+    name: bound
+    schema:
+        - int:
+            name: width
+        - int:
+            name: height
+        - int:
+            name: x_center
+        - int:
+            name: y_center
+
+- component:
+    name: map
+    schema:
+        - int:
+            name: width
+        - int:
+            name: height
+        - array:
+            name: tiles
+            content:
+                array:
+                    content: int

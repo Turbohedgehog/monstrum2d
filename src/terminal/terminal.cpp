@@ -9,10 +9,15 @@ namespace m2d {
 namespace hi {
 
 Terminal::Terminal() {
+  #if 0
   //AppendScreen();
+  
   auto screen = initscr();
   keypad(screen, true);
-  //noecho();
+  noecho();
+  #endif
+
+  #if 0
   curs_set(0);
   start_color();
   init_pair(1, COLOR_WHITE, COLOR_BLUE);
@@ -22,7 +27,9 @@ Terminal::Terminal() {
   init_pair(5, COLOR_YELLOW, COLOR_BLACK);
   init_pair(6, COLOR_WHITE, COLOR_RED);
 
-  bkgd(COLOR_PAIR(6));
+  //bkgd(COLOR_PAIR(6));
+  bkgd(COLOR_PAIR(1));
+  #endif
 }
 
 Terminal& Terminal::GetInstance() {
@@ -32,10 +39,18 @@ Terminal& Terminal::GetInstance() {
 }
 
 ScreenWeakPtr Terminal::AppendScreen() {
+  if (active_screens_.empty()) {
+    auto screen = initscr();
+    keypad(screen, true);
+    noecho();
+    curs_set(0);
+  }
+
   auto screen = std::make_shared<Screen>(active_screen_counter_);
   active_screens_[active_screen_counter_] = screen;
   if (!active_screen_) {
     active_screen_ = screen;
+    screen->OnActivate();
   }
 
   ++active_screen_counter_;
@@ -51,10 +66,30 @@ void Terminal::Shutdown() {
   endwin();
 }
 
+ScreenWeakPtr Terminal::GetScreen(std::size_t id) const {
+  auto it = active_screens_.find(id);
+
+  return it != active_screens_.end() ? it->second : ScreenWeakPtr();
+}
+
 void Terminal::Update(float delta) {
   if (active_screen_) {
     active_screen_->Update(delta);
   }
+}
+
+ScreenWeakPtr Terminal::SetActiveScreen(std::size_t id) {
+  auto screen = GetScreen(id);
+  if (!screen.expired()) {
+    if (active_screen_) {
+      active_screen_->OnDeactivate();
+    }
+
+    active_screen_ = screen.lock();
+    active_screen_->OnActivate();
+  }
+
+  return screen;
 }
 
 }  // namespace hi
