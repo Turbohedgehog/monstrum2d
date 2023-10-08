@@ -10,6 +10,7 @@ namespace hi {
 
 Terminal::Terminal() {
   //AppendScreen();
+  
   auto screen = initscr();
   keypad(screen, true);
   //noecho();
@@ -44,11 +45,11 @@ ScreenWeakPtr Terminal::AppendScreen() {
 }
 
 void Terminal::Sleep(int milliseconds) {
-  timeout(milliseconds);
+  //timeout(milliseconds);
 }
 
 void Terminal::Shutdown() {
-  endwin();
+  //endwin();
 }
 
 void Terminal::Update(float delta) {

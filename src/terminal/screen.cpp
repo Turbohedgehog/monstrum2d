@@ -21,7 +21,7 @@ void Screen::SetKeyPressed(KeyCode key_pressed) {
 }
 
 void Screen::Update(float delta) {
-  //clear();
+  clear();
 
   int key = getch();
   //int key = -1;
@@ -30,7 +30,7 @@ void Screen::Update(float delta) {
   //attrset(A_DIM | COLOR_PAIR(5));
   printw("WWWWWWWWWW");
   if (key > 0) { 
-    printw("   %d", &key);
+    printw("   %d", key);
     SetKeyPressed(key);
     if (key == 27) {
       //exit(0);
