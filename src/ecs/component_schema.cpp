@@ -84,6 +84,27 @@ ComponentDataPtr ComponentStruct::AccessToComponentData(
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
+ComponentArray::ComponentArray(std::size_t dimensions, ComponentFieldPtr content)
+    : dimensions_ (dimensions)
+    , content_ (content) {}
+
+ComponentDataPtr ComponentArray::AllocateData(ECSWeakPtr ecs) const {
+  return ComponentDataPtr();
+}
+
+ComponentFiledType ComponentArray::GetType() const {
+  return ComponentFiledType::Array;
+}
+
+ComponentDataPtr ComponentArray::AccessToComponentData(
+      ComponentDataPtr component_data,
+      const FieldIndexContainer& indices,
+      std::size_t idx) const {
+  return ComponentDataPtr();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 ComponentSchema::ComponentSchema(const std::string& name)
   : name_(name)
   , root_(std::make_shared<ComponentStruct>()) {}

@@ -7,6 +7,11 @@ class PlayerSystem(SystemBase):
     self.holder = system_handler.get_holder()
     self.player_system_ecs = self.holder.get_or_create_ecs("PlayerSystem")
     self.player_component_schema = self.holder.get_component_schema("player_component")
+    self.player_filter = self.player_system_ecs.get_or_create_filter(["player_component"])
+    for p in self.player_filter:
+      player_component = p.get_component("player_component")
+      new_player_name = self.player_component_schema.get_field(player_component, 0)
+      print(f"1. new_player_name = {new_player_name}")
     #print(f"{type(self.player_component_schema)}")
     #print(f"self.player_component_schema.schema = {self.player_component_schema.schema}")
     #self.player_component_filter = self.player_system_ecs.get_or_register_filter("player_component")
@@ -19,4 +24,8 @@ class PlayerSystem(SystemBase):
     self.player_component_schema.set_field(player_component, ["player_name"], "New Player name")
     # acess by field index
     new_player_name = self.player_component_schema.get_field(player_component, 0)
-    print(f"new player_name = {new_player_name}")    
+    print(f"new player_name = {new_player_name}")
+    for p in self.player_filter:
+      player_component = p.get_component("player_component")
+      new_player_name = self.player_component_schema.get_field(player_component, 0)
+      print(f"2. new_player_name = {new_player_name}")

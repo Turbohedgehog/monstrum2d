@@ -20,6 +20,37 @@ ComponentFieldPtr ParsePrimitive(const YAML::Node& item) {
   return std::make_shared<ComponentPrimitiveField<T>>(default_value);
 };
 
+ComponentFieldPtr ParseArray(const YAML::Node& item) {
+  static const std::map<std::string, std::function<ComponentFieldPtr()>> kFieldFactory = {
+    {"int", [] { return std::make_shared<ComponentPrimitiveField<int>>(); } },
+    {"double", [] { return std::make_shared<ComponentPrimitiveField<double>>(); } },
+    {"string", [] { return std::make_shared<ComponentPrimitiveField<std::string>>(); } }
+  };
+
+  auto type_node = item["type"];
+  if (!type_node) {
+    throw std::runtime_error("type filed is not defined");
+  }
+
+  auto type_str = type_node.as<std::string>();
+  auto it = kFieldFactory.find(type_str);
+  if (it == kFieldFactory.end()) {
+    throw std::runtime_error(
+      (
+        boost::format("Cannot create array of type '%s'") %
+        type_str
+      ).str()
+    );
+  }
+
+  auto dimensions_node = item["dimensions"];
+  std::size_t dimensions = dimensions_node ? dimensions_node.as<std::size_t>() : 1;
+
+  ComponentFieldPtr content = it->second();
+  
+  return std::make_shared<ComponentArray>(dimensions, content);
+}
+
 
 std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
   const std::filesystem::path& schemas_path) {
@@ -95,7 +126,8 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
       try {
         auto field_type = item.begin()->first.as<std::string>();
         auto field_name = name.as<std::string>();
-        auto name = item.begin()->second["name"];
+        auto item_node = item.begin()->second;
+        auto name = item_node["name"];
         if (!name) {
           throw std::runtime_error(
             (
@@ -109,11 +141,24 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         
         auto name_str = name.as<std::string>();
         if (field_type == "int") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<int>(item.begin()->second));
+          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<int>(item_node));
         } else if (field_type == "double") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<double>(item.begin()->second));
+          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<double>(item_node));
         } else if (field_type == "string") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<std::string>(item.begin()->second));
+          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<std::string>(item_node));
+        } else if (field_type == "array") {
+          try {
+            component_schema->GetRoot()->AppendField(std::move(name_str), ParseArray(item_node));
+          } catch (const std::exception& ex) {
+            throw std::runtime_error(
+              (
+                boost::format("[%s] Component '%s' schema. Cannot parse array:  '%s'") %
+                  schemas_path_str %
+                  component_schema->GetName() %
+                  ex.what()
+              ).str()
+            );
+          }
         } else {
           throw std::runtime_error(
             (

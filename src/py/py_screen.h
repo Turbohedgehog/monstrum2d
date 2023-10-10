@@ -15,6 +15,11 @@ class Screen {
   void SetScreen(hi::ScreenWeakPtr screen);
   bp::object GetKeyPressed() const;
 
+  void SetColorPair(int pair_id, int foreground, int background);
+  void SetClearColorPair(int pair_id);
+  int GetId() const;
+  void Clear();
+
  private:
   hi::ScreenWeakPtr screen_;
 };
