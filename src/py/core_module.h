@@ -1,8 +1,6 @@
 #pragma once
 
-#define BOOST_PYTHON_STATIC_LIB
-
-#include <boost/python.hpp>
+#include "py/py.h"
 
 #include "py/system_base.h"
 #include "py/py_ecs.h"
@@ -15,6 +13,8 @@
 #include "py/py_screen.h"
 
 BOOST_PYTHON_MODULE(Core) {
+  PyEval_InitThreads();
+  bp::scope().attr("__path__") = "Core";
   m2d::py::Terminal::CreateClassDeclaration();
   m2d::py::SystemBase::CreateClassDeclaration();
   

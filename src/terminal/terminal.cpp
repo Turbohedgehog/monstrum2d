@@ -23,7 +23,8 @@ Terminal::Terminal() {
   init_pair(5, COLOR_YELLOW, COLOR_BLACK);
   init_pair(6, COLOR_WHITE, COLOR_RED);
 
-  bkgd(COLOR_PAIR(6));
+  //bkgd(COLOR_PAIR(6));
+  bkgd(COLOR_PAIR(1));
 }
 
 Terminal& Terminal::GetInstance() {
@@ -45,11 +46,11 @@ ScreenWeakPtr Terminal::AppendScreen() {
 }
 
 void Terminal::Sleep(int milliseconds) {
-  //timeout(milliseconds);
+  timeout(milliseconds);
 }
 
 void Terminal::Shutdown() {
-  //endwin();
+  endwin();
 }
 
 void Terminal::Update(float delta) {

@@ -29,10 +29,11 @@ class Application {
 
   ecs::HolderWeakPtr ecs_holder_;
 
-  boost::python::object global_;
-  boost::python::object builtins_module_;
-  boost::python::object inspect_module_;
-  boost::python::object system_base_class_;
+  bp::object global_;
+  //bp::dict global_;
+  bp::object builtins_module_;
+  bp::object inspect_module_;
+  bp::object system_base_class_;
 
   std::shared_ptr<SystemHandler> system_handler_;
 };

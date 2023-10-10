@@ -3,6 +3,7 @@
 #include <variant>
 #include <memory>
 #include <string>
+#include <bitset>
 
 template <typename... Ts> struct visitor_overload : Ts... { using Ts::operator()...; };
 template <typename... Ts> visitor_overload(Ts...) -> visitor_overload<Ts...>;
@@ -13,6 +14,17 @@ namespace ecs {
 
 using StringIndex = std::variant<std::string, std::size_t>;
 using ComponentLifetime = std::variant<double, int>;
+
+static const std::size_t kMaxComponentIndex = 256;
+
+using ComponentBitmask = std::bitset<kMaxComponentIndex>;
+#if 0
+struct ComponentBitmaskComparer {
+  bool operator() (const ComponentBitmask &b1, const bitset<8> &b2) const {
+      return b1.to_ulong() < b2.to_ulong();
+  }
+};
+#endif
 
 class Holder;
 using HolderPtr = std::shared_ptr<Holder>;
@@ -28,6 +40,10 @@ using EntityWeakPtr = std::weak_ptr<Entity>;
 
 class System;
 using SystemPtr = std::shared_ptr<System>;
+
+class Filter;
+using FilterPtr = std::shared_ptr<Filter>;
+using FilterWeakPtr = std::weak_ptr<Filter>;
 
 class Component;
 using ComponentPtr = std::shared_ptr<Component>;
@@ -55,3 +71,4 @@ using ApplicationWeakPtr = std::weak_ptr<Application>;
 }  // namespace py
 
 }  // namespace m2d
+

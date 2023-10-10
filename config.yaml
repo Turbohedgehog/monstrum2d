@@ -12,3 +12,4 @@ ecs:
     - declaration: assets/main_menu/main_menu_system.py
     - declaration: assets/player/player_system.py
     - declaration: assets/game/gameplay.py
+    - declaration: assets/game/render.py

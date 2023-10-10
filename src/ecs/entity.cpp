@@ -22,11 +22,23 @@ ECSWeakPtr Entity::GetECS() const {
   return ecs_;
 }
 
-void Entity::AddComponents(const std::vector<std::string>& components) {
+void Entity::AddComponents(const std::vector<StringIndex>& components) {
   auto holder = ecs_.lock()->GetHolder().lock();
   auto pool = ecs_.lock()->GetPool().lock();
-  for (const auto& component_name : components) {
-    auto schema_id = holder->GetComponentSchemaIdByName(component_name);
+  for (const auto& component_index : components) {
+    std::optional<std::size_t> schema_id;
+    std::visit(
+      visitor_overload {
+        [&schema_id, &holder](const std::string& component_name) {
+          schema_id = holder->GetComponentSchemaIdByName(component_name);
+        },
+        [&schema_id](std::size_t component_id) {
+          schema_id = component_id;
+        }
+      },
+      component_index
+    );
+
     if (!schema_id) {
       continue;
     }
@@ -35,6 +47,7 @@ void Entity::AddComponents(const std::vector<std::string>& components) {
     auto schema = holder->GetComponentSchema(s_id);
     auto component_data = schema.lock()->CreateComponentData(ecs_);
     components_[s_id] = pool->AllocateComponent(s_id, id_, component_data);
+    component_bitmask_[s_id] = 1;
   }
 }
 
@@ -73,6 +86,10 @@ bool Entity::Tick(float delta) {
   }
 
   return !components_.empty();
+}
+
+const ComponentBitmask& Entity::GetComponentBitmask() const {
+  return component_bitmask_;
 }
 
 }  // namespace ecs

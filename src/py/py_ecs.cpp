@@ -22,12 +22,17 @@ bp::object ECS::CreateClassDeclaration() {
 }
 
 Entity ECS::CreateEntity(bp::list component_names) {
-  std::vector<std::string> c_names;
+  std::vector<ecs::StringIndex> c_names;
   auto len = bp::len(component_names);
   c_names.reserve(len);
 
   for (decltype(len) i = 0; i < len; ++i) {
-    c_names.push_back(bp::extract<std::string>(component_names[i]));
+    bp::extract<std::string> get_string(component_names[i]);
+    if (get_string.check()) {
+      c_names.push_back(get_string());
+    } else {
+      c_names.push_back(bp::extract<std::size_t>(component_names[i]));
+    }
   }
 
   auto entity_ptr = ecs_.lock()->CreateEnity(c_names);

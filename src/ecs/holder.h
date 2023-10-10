@@ -34,6 +34,8 @@ class Holder : public std::enable_shared_from_this<Holder> {
 
   void AppendSystem(SystemPtr system);
 
+  ComponentBitmask CreateComponentBitmask(const std::vector<StringIndex>& components) const;
+
  private:
   void RegisterServiceSystem();
   void UpdateSystems(float delta);

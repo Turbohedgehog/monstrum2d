@@ -1,6 +1,8 @@
 #include "ecs/ecs.h"
 #include "ecs/pool.h"
 #include "ecs/entity.h"
+#include "ecs/filter.h"
+#include "ecs/holder.h"
 
 namespace m2d {
 
@@ -14,7 +16,7 @@ HolderWeakPtr ECS::GetHolder() const {
   return ecs_holder_;
 }
 
-EntityWeakPtr ECS::CreateEnity(const std::vector<std::string>& components) {
+EntityWeakPtr ECS::CreateEnity(const std::vector<StringIndex>& components) {
   auto entity = pool_->AllocateEntity(entity_counter_, shared_from_this());
   ++entity_counter_;
 
@@ -37,6 +39,22 @@ void ECS::Tick(float delta) {
       ++it;
     }
   }
+}
+
+FilterWeakPtr ECS::GetOrCreateFilter(const std::vector<StringIndex>& components) {
+  auto filter_bitmask = ecs_holder_.lock()->CreateComponentBitmask(components);
+  auto it = filters_.find(filter_bitmask);
+  if (it != filters_.end()) {
+    return it->second;
+  }
+  
+  auto filter = pool_->AllocateFilter(shared_from_this(), filter_bitmask);
+  if (!filter->IsValid()) {
+    return FilterWeakPtr();
+  }
+
+  filters_[filter_bitmask] = filter;
+  return filter;
 }
 
 }  // namespace ecs

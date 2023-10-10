@@ -1,0 +1,30 @@
+- component:
+    name: surviver
+    schema: ...
+
+- component:
+    name: coordinate
+    schema:
+        - int:
+            name: x
+        - int:
+            name: y
+
+- component:
+    name: bound
+    schema:
+        - int:
+            name: width
+        - int:
+            name: height
+        - int:
+            name: x_center
+        - int:
+            name: y_center
+
+
+- component:
+    name: tile
+    schema:
+
+

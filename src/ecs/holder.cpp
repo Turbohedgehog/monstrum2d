@@ -144,6 +144,30 @@ ComponentSchemaWeakPtr Holder::GetComponentSchema(const std::string& schema_name
   return id ? GetComponentSchema(id.value()) : ComponentSchemaWeakPtr();
 }
 
+ComponentBitmask Holder::CreateComponentBitmask(const std::vector<StringIndex>& components) const {
+  ComponentBitmask res;
+  for (const StringIndex& index : components) {
+    std::optional<std::size_t> schema_id;
+    std::visit(
+      visitor_overload{
+        [this, &schema_id](const std::string& name) {
+          schema_id = GetComponentSchemaIdByName(name);
+        },
+        [&schema_id](std::size_t id) {
+          schema_id = id >= kMaxComponentIndex ? std::optional<std::size_t>() : id;
+        },
+      },
+      index
+    );
+
+    if (schema_id) {
+      res[schema_id.value()] = 1;
+    }
+  }
+
+  return res;
+}
+
 } // namespace ecs
 
 }  // namespace m2d
