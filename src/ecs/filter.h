@@ -15,11 +15,12 @@ class Filter {
   Filter(ECSWeakPtr ecs, const ComponentBitmask& filter_bitmask);
   bool IsValid() const;
   void ProcessEntity(EntityWeakPtr entity);
+  EntityMap& GetEnities();
 
  private:
   ECSWeakPtr ecs_;
   ComponentBitmask filter_bitmask_;
-  std::map<std::size_t, EntityWeakPtr> entities_;
+  EntityMap entities_;
 
 };
 

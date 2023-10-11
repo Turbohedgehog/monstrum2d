@@ -23,6 +23,10 @@ void Filter::ProcessEntity(EntityWeakPtr entity) {
   }
 }
 
+EntityMap& Filter::GetEnities() {
+  return entities_;
+}
+
 
 }  // namespace ecs
 

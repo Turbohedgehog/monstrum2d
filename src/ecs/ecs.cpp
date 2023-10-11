@@ -20,9 +20,12 @@ EntityWeakPtr ECS::CreateEnity(const std::vector<StringIndex>& components) {
   auto entity = pool_->AllocateEntity(entity_counter_, shared_from_this());
   ++entity_counter_;
 
+  entity->AddComponents(components);
   enities_[entity_counter_] = entity;
 
-  entity->AddComponents(components);
+  for (auto& [_, filter] : filters_) {
+    filter->ProcessEntity(entity);
+  }
 
   return entity;
 }
@@ -54,6 +57,11 @@ FilterWeakPtr ECS::GetOrCreateFilter(const std::vector<StringIndex>& components)
   }
 
   filters_[filter_bitmask] = filter;
+
+  for (auto& [_, entity] : enities_) {
+    filter->ProcessEntity(entity);
+  }
+
   return filter;
 }
 

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <bitset>
+#include <map>
 
 template <typename... Ts> struct visitor_overload : Ts... { using Ts::operator()...; };
 template <typename... Ts> visitor_overload(Ts...) -> visitor_overload<Ts...>;
@@ -16,15 +17,7 @@ using StringIndex = std::variant<std::string, std::size_t>;
 using ComponentLifetime = std::variant<double, int>;
 
 static const std::size_t kMaxComponentIndex = 256;
-
 using ComponentBitmask = std::bitset<kMaxComponentIndex>;
-#if 0
-struct ComponentBitmaskComparer {
-  bool operator() (const ComponentBitmask &b1, const bitset<8> &b2) const {
-      return b1.to_ulong() < b2.to_ulong();
-  }
-};
-#endif
 
 class Holder;
 using HolderPtr = std::shared_ptr<Holder>;
@@ -37,6 +30,8 @@ using ECSWeakPtr = std::weak_ptr<ECS>;
 class Entity;
 using EntityPtr = std::shared_ptr<Entity>;
 using EntityWeakPtr = std::weak_ptr<Entity>;
+
+using EntityMap = std::map<std::size_t, EntityWeakPtr>;
 
 class System;
 using SystemPtr = std::shared_ptr<System>;

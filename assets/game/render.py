@@ -2,7 +2,7 @@ from Core import SystemBase
 from Core import Terminal
 
 
-class Gameplay(SystemBase):
+class Render(SystemBase):
   def __init__(self, system_handler):
     super().__init__(system_handler)
 
