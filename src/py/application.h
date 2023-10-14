@@ -30,7 +30,6 @@ class Application {
   ecs::HolderWeakPtr ecs_holder_;
 
   bp::object global_;
-  //bp::dict global_;
   bp::object builtins_module_;
   bp::object inspect_module_;
   bp::object system_base_class_;

@@ -48,5 +48,6 @@
             name: height
         - array:
             name: data
-            type: int
-            dimensions: 2
+            content:
+                array:
+                    content: int

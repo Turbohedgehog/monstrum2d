@@ -13,42 +13,64 @@ namespace m2d {
 
 namespace ecs {
 
+ComponentFieldPtr ParseFieldNode(const std::string& field_type, const YAML::Node& item_node);
+
 template<typename T>
 ComponentFieldPtr ParsePrimitive(const YAML::Node& item) {
-  auto default_value_node = item["default"];
-  T default_value = default_value_node ? default_value_node.as<T>() : DefaultValue<T>::value;
+  auto default_value_node = item.IsScalar() ? YAML::Node() : item["default"];
+  T default_value = default_value_node && !default_value_node.IsNull() ? default_value_node.as<T>() : DefaultValue<T>::value;
+
   return std::make_shared<ComponentPrimitiveField<T>>(default_value);
 };
 
 ComponentFieldPtr ParseArray(const YAML::Node& item) {
-  static const std::map<std::string, std::function<ComponentFieldPtr()>> kFieldFactory = {
-    {"int", [] { return std::make_shared<ComponentPrimitiveField<int>>(); } },
-    {"double", [] { return std::make_shared<ComponentPrimitiveField<double>>(); } },
-    {"string", [] { return std::make_shared<ComponentPrimitiveField<std::string>>(); } }
-  };
-
-  auto type_node = item["type"];
-  if (!type_node) {
-    throw std::runtime_error("type filed is not defined");
+  auto content_node = item["content"];
+  if (!content_node) {
+    throw std::runtime_error("Conent node in array declaration is nit defined");
   }
 
-  auto type_str = type_node.as<std::string>();
-  auto it = kFieldFactory.find(type_str);
-  if (it == kFieldFactory.end()) {
-    throw std::runtime_error(
-      (
-        boost::format("Cannot create array of type '%s'") %
-        type_str
-      ).str()
-    );
+  if (content_node.IsScalar()) {
+    auto content_node_type = content_node.as<std::string>();
+    return std::make_shared<ComponentArray>(ParseFieldNode(content_node_type, content_node));
   }
 
-  auto dimensions_node = item["dimensions"];
-  std::size_t dimensions = dimensions_node ? dimensions_node.as<std::size_t>() : 1;
+  if (content_node.IsMap()) {
+    auto sub_node = content_node.begin();
+    auto sub_node_type = sub_node->first.as<std::string>();
+    auto sub_node_item = sub_node->second;
+    return std::make_shared<ComponentArray>(ParseFieldNode(sub_node_type, sub_node_item));
+  }
 
-  ComponentFieldPtr content = it->second();
-  
-  return std::make_shared<ComponentArray>(dimensions, content);
+  throw std::runtime_error("Array content has unspecified schema");
+
+  return ComponentFieldPtr();
+}
+
+ComponentFieldPtr ParseFieldNode(const std::string& field_type, const YAML::Node& item_node) {
+  if (field_type == "int") {
+    return ParsePrimitive<int>(item_node);
+  }
+
+  if (field_type == "double") {
+    return ParsePrimitive<double>(item_node);
+  }
+
+  if (field_type == "string") {
+    return ParsePrimitive<std::string>(item_node);
+  }
+
+  if (field_type == "array") {
+    return ParseArray(item_node);
+  }
+
+  throw std::runtime_error(
+    (
+      boost::format("Inknown field type '%s'") %
+        field_type
+    ).str()
+  );
+
+  return ComponentFieldPtr();
 }
 
 
@@ -74,7 +96,6 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
     }
 
     auto component_schema = std::make_shared<ComponentSchema>(name.as<std::string>());
-    //schemas.push_back(component_schema);
 
     auto lifetime = component["lifetime"];
     if (lifetime) {
@@ -140,25 +161,9 @@ std::vector<ComponentSchemaPtr> ComponentSchemaLoader::LoadComponentSchemas(
         }
         
         auto name_str = name.as<std::string>();
-        if (field_type == "int") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<int>(item_node));
-        } else if (field_type == "double") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<double>(item_node));
-        } else if (field_type == "string") {
-          component_schema->GetRoot()->AppendField(std::move(name_str), ParsePrimitive<std::string>(item_node));
-        } else if (field_type == "array") {
-          try {
-            component_schema->GetRoot()->AppendField(std::move(name_str), ParseArray(item_node));
-          } catch (const std::exception& ex) {
-            throw std::runtime_error(
-              (
-                boost::format("[%s] Component '%s' schema. Cannot parse array:  '%s'") %
-                  schemas_path_str %
-                  component_schema->GetName() %
-                  ex.what()
-              ).str()
-            );
-          }
+        ComponentFieldPtr component_field_ptr = ParseFieldNode(field_type, item_node);
+        if (component_field_ptr) {
+          component_schema->GetRoot()->AppendField(std::move(name_str), component_field_ptr);
         } else {
           throw std::runtime_error(
             (

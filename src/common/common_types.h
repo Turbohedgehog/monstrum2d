@@ -55,6 +55,12 @@ class Pool;
 using PoolPtr = std::shared_ptr<Pool>;
 using PoolWeakPtr = std::weak_ptr<Pool>;
 
+class ArrayComponentData;
+using ArrayComponentDataWeakPtr = std::weak_ptr<ArrayComponentData>;
+
+class ComponentField;
+using ComponentFieldPtr = std::shared_ptr<ComponentField>;
+
 }  // namespace ecs
 
 namespace py {

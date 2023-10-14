@@ -1,5 +1,7 @@
 #include "py/py_component_schema.h"
 
+#include "py/py_array.h"
+
 #include "ecs/component_schema.h"
 #include "ecs/component_data.h"
 
@@ -102,6 +104,12 @@ bp::object ComponentSchema::GetField(Component component, bp::object field_path)
 
     case ecs::ComponentFiledType::String:
       return bp::object(std::static_pointer_cast<ecs::ComponentPrimitiveData<std::string>>(component_data)->data);
+
+    case ecs::ComponentFiledType::Array:
+      Array array;
+      array.SetData(std::static_pointer_cast<ecs::ArrayComponentData>(component_data));
+
+      return bp::object(array);
   }
 
   return bp::object();

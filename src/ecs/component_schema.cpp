@@ -38,7 +38,6 @@ ComponentDataPtr ComponentStruct::AllocateData(ECSWeakPtr ecs) const {
       std::back_inserter(struct_data->data),
       [&ecs](auto& field_info) {
         return field_info->AllocateData(ecs);
-        //return field_pair.second->AllocateData(ecs);
       });
 
   return struct_data;
@@ -84,12 +83,15 @@ ComponentDataPtr ComponentStruct::AccessToComponentData(
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-ComponentArray::ComponentArray(std::size_t dimensions, ComponentFieldPtr content)
-    : dimensions_ (dimensions)
-    , content_ (content) {}
+ComponentArray::ComponentArray(ComponentFieldPtr content)
+    : content_ (content) {}
 
 ComponentDataPtr ComponentArray::AllocateData(ECSWeakPtr ecs) const {
-  return ComponentDataPtr();
+  auto array_data = std::make_shared<ArrayComponentData>();
+  array_data->content_field = content_;
+  array_data->ecs = ecs;
+
+  return array_data;
 }
 
 ComponentFiledType ComponentArray::GetType() const {
@@ -100,7 +102,33 @@ ComponentDataPtr ComponentArray::AccessToComponentData(
       ComponentDataPtr component_data,
       const FieldIndexContainer& indices,
       std::size_t idx) const {
-  return ComponentDataPtr();
+  if (idx == indices.size()) {
+    return component_data;
+  }
+
+  const StringIndex& index = indices[idx];
+  std::optional<std::size_t> array_idx;
+  std::visit(
+    visitor_overload {
+      [&array_idx](std::size_t field_index) { array_idx = field_index; },
+      [](const std::string& /*field_name*/) {}
+    },
+    index);
+
+  if (!array_idx) {
+    return ComponentDataPtr();
+  }
+
+  auto array_idx_value = array_idx.value();
+
+  auto array_data = std::static_pointer_cast<ArrayComponentData>(component_data);
+  if (array_idx_value >= array_data->data.size()) {
+    return ComponentDataPtr();
+  }
+
+  auto next_data = array_data->data[array_idx_value];
+
+  return content_->AccessToComponentData(next_data, indices, idx + 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -116,26 +144,6 @@ const std::string& ComponentSchema::GetName() const {
 ComponentStructPtr ComponentSchema::GetRoot() const {
   return root_;
 }
-
-#if 0
-void ComponentSchema::AppendField(ComponentFieldPtr field) {
-  const auto& field_name = field->GetName();
-  if (field_index_map_.left.find(field_name) != field_index_map_.left.end()) {
-    throw std::runtime_error(
-      (
-        boost::format("[%s] Attempt to add a field with a duplicate name '%s'") %
-          GetName() %
-          field->GetName()
-      ).str()
-    );
-  }
-
-  field_index_map_.insert({field_name, field_counter_});
-  fields_[field_counter_] = field;
-
-  ++field_counter_;
-}
-#endif
 
 ComponentPtr ComponentSchema::AllocateComponent(ECSWeakPtr /*ecs*/) const {
   return ComponentPtr();
