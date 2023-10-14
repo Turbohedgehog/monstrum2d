@@ -9,11 +9,16 @@ class MapGenerator(SystemBase):
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
     self.map_tile_schema = self.holder.get_component_schema("map_tile")
     self.bound_schema = self.holder.get_component_schema("bound")
+    
+    self.system_handler.enable_system_update(self)
+    '''
     self.map_schema = self.holder.get_component_schema("map")
     self.map_ecs = self.holder.get_or_create_ecs("map")
 
     self.create_map(20, 20)
+    '''
 
+'''
   def create_map(self, width, height):
     map_entity = self.map_ecs.create_entity(["map"])
     map_component = map_entity.get_component("map")
@@ -29,3 +34,4 @@ class MapGenerator(SystemBase):
     for x in range(width):
       for y in range(height):
         self.map_schema.set_field(map_component, ["data", x, y], wall)
+'''

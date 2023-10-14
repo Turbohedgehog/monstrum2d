@@ -9,6 +9,7 @@ namespace py {
 bp::object Terminal::CreateClassDeclaration() {
   static bp::object class_decl =  bp::class_<m2d::py::Terminal>("Terminal")
       .def("create_screen", &Terminal::CreateScreen).staticmethod("create_screen")
+      .def("get_screen", &Terminal::GetScreen).staticmethod("get_screen")
   ;
 
   return class_decl;

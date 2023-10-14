@@ -9,11 +9,14 @@ namespace m2d {
 namespace hi {
 
 Terminal::Terminal() {
+  #if 0
   //AppendScreen();
   
   auto screen = initscr();
   keypad(screen, true);
   noecho();
+  #endif
+
   #if 0
   curs_set(0);
   start_color();
@@ -36,6 +39,12 @@ Terminal& Terminal::GetInstance() {
 }
 
 ScreenWeakPtr Terminal::AppendScreen() {
+  if (active_screens_.empty()) {
+    auto screen = initscr();
+    keypad(screen, true);
+    noecho();
+  }
+
   auto screen = std::make_shared<Screen>(active_screen_counter_);
   active_screens_[active_screen_counter_] = screen;
   if (!active_screen_) {

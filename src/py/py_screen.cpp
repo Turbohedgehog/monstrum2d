@@ -12,6 +12,10 @@ bp::object Screen::CreateClassDeclaration() {
       .def("get_key_pressed", &Screen::GetKeyPressed)
       .def("set_color_pair", &Screen::SetColorPair, bp::args(("pair_id"), ("foreground"), ("background")))
       .def("set_clear_color", &Screen::SetClearColorPair, bp::args(("pair_id")))
+
+      .def("select_color_pair", &Screen::SelectColorPair, bp::args(("pair_id")))
+      .def("move_to", &Screen::MoveTo, bp::args(("x"), ("y")))
+      .def("print", &Screen::PrintW, bp::args(("str")))
   ;
 }
 
@@ -64,6 +68,18 @@ int Screen::GetId() const {
 
 void Screen::Clear() {
   screen_.lock()->Clear();
+}
+
+void Screen::SelectColorPair(uint8_t pair_id) {
+  screen_.lock()->SelectColorPair(pair_id);
+}
+
+void Screen::MoveTo(int x, int y) {
+  screen_.lock()->MoveTo(x, y);
+}
+
+void Screen::PrintW(const std::string& str) {
+  screen_.lock()->PrintW(str);
 }
 
 }  // namespace py

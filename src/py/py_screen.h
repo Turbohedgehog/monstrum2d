@@ -20,6 +20,10 @@ class Screen {
   int GetId() const;
   void Clear();
 
+  void SelectColorPair(uint8_t pair_id);
+  void MoveTo(int x, int y);
+  void PrintW(const std::string& str);
+
  private:
   hi::ScreenWeakPtr screen_;
 };

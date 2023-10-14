@@ -2,6 +2,7 @@
 
 #include <array>
 #include <tuple>
+#include <string>
 
 #include "terminal/types.h"
 
@@ -21,10 +22,14 @@ class Screen {
   void OnDeactivate();
   void SetColorPair(uint8_t pair_id, uint8_t foreground, uint8_t background);
   void SetClearColorPair(uint8_t pair_id);
-
+  
   void SetKeyPressed(KeyCode key_pressed);
   KeyCode GetKeyPressed() const;
   void Clear();
+
+  void SelectColorPair(uint8_t pair_id);
+  void MoveTo(int x, int y);
+  void PrintW(const std::string& str);
 
  private:
   std::size_t id_ = 0;

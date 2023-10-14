@@ -4,6 +4,8 @@
         - int:
             name: state
             default: 0
+        - int:
+            name: screen_id
 
 - component:
     name: surviver
@@ -47,7 +49,7 @@
         - int:
             name: height
         - array:
-            name: data
+            name: tiles
             content:
                 array:
                     content: int

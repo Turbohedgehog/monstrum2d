@@ -24,21 +24,36 @@ void Screen::SetKeyPressed(KeyCode key_pressed) {
 }
 
 void Screen::Update(float delta) {
+  #if 0
   //clear();
   bkgd(COLOR_PAIR(1));
 
-  int key = getch();
   //int key = -1;
   //std::cout << "key = " << key << "\n";
   move(10, 10);
   attrset(A_DIM | COLOR_PAIR(5));
   printw("WWWWWWWWWW");
+  #endif
+  
+  int key = getch();
   if (key > 0) { 
     printw("   %d", key);
     SetKeyPressed(key);
   } else {
     SetKeyPressed(std::nullopt);
   }
+}
+
+void Screen::SelectColorPair(uint8_t pair_id) {
+  attrset(A_DIM | COLOR_PAIR(pair_id));
+}
+
+void Screen::MoveTo(int x, int y) {
+  move(y, x);
+}
+
+void Screen::PrintW(const std::string& str) {
+  printw(str.c_str());
 }
 
 KeyCode Screen::GetKeyPressed() const {
