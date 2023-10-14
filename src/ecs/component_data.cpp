@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-//#include "ecs.h"
 #include "ecs/component_schema.h"
 
 namespace m2d {
@@ -23,7 +22,7 @@ void ArrayComponentData::Resize(std::size_t size) {
 }
 
 void ArrayComponentData::Insert(std::size_t idx, std::size_t count) {
-  data.insert(std::next(data.begin() + idx), count, ComponentDataPtr());
+  data.insert(data.begin() + idx, count, ComponentDataPtr());
 
   for (std::size_t i = 0; i < count; ++i) {
     data[idx + i] = content_field->AllocateData(ecs);
@@ -31,7 +30,7 @@ void ArrayComponentData::Insert(std::size_t idx, std::size_t count) {
 }
 
 void ArrayComponentData::Remove(std::size_t idx, std::size_t count) {
-  data.erase(std::next(data.begin() + idx), std::next(data.begin() + idx + count - 1));
+  data.erase(data.begin() + idx, data.begin() + idx + count - 1);
 }
 
 }  // namespace ecs

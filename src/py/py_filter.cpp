@@ -11,7 +11,6 @@ bp::object Filter::CreateClassDeclaration() {
   return bp::class_<Filter>("Filter")
       .def("__iter__", &Filter::Iter)
       .def("__next__", &Filter::Next)
-      //.add_property("entities", bp::range(&Filter::Begin, &Filter::End))
   ;
 }
 
@@ -21,16 +20,10 @@ void Filter::SetFilter(ecs::FilterWeakPtr filter) {
 }
 
 Filter Filter::Iter() {
-#if 0
-  entity_iterator_ = filter_.lock()->GetEnities().begin();
-
-  return *this;
- #else
   Filter filter;
   filter.SetFilter(filter_);
 
   return filter;
-#endif
 }
 
 Entity Filter::Next() {

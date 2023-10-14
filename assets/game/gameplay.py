@@ -9,6 +9,7 @@ class Gameplay(SystemBase):
     self.gameplay_screen = Terminal.create_screen()
     self.holder = system_handler.get_holder()
     self.gameplay_ecs = self.holder.get_or_create_ecs("Gameplay")
+
     self.system_handler.enable_system_update(self)
 
 

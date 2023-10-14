@@ -11,6 +11,7 @@ bp::object Array::CreateClassDeclaration() {
       .def("resize", &Array::Resize, (bp::arg("size")))
       .def("insert", &Array::Insert, (bp::arg("index"), bp::arg("count") = 1))
       .def("remove", &Array::Remove, (bp::arg("index"), bp::arg("count") = 1))
+      .def("__len__", &Array::Len)
   ;
 }
 
@@ -27,7 +28,7 @@ void Array::Resize(int size) {
     return;
   }
 
-  array_data_.lock()->Insert(static_cast<std::size_t>(size));
+  array_data_.lock()->Resize(static_cast<std::size_t>(size));
 }
 
 void Array::Insert(int idx, int count) {
