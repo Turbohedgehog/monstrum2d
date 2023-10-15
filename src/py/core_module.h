@@ -12,10 +12,14 @@
 #include "py/py_terminal.h"
 #include "py/py_screen.h"
 #include "py/py_array.h"
+#include "py/py_vector2d.h"
 
 BOOST_PYTHON_MODULE(Core) {
-  PyEval_InitThreads();
-  bp::scope().attr("__path__") = "Core";
+  //PyEval_InitThreads();
+
+  m2d::py::Screen::CreateColorEnumDeclaration();
+
+  //bp::scope().attr("__path__") = "Core";
   
   m2d::py::Terminal::CreateClassDeclaration();
   m2d::py::SystemBase::CreateClassDeclaration();
@@ -27,4 +31,6 @@ BOOST_PYTHON_MODULE(Core) {
   m2d::py::ComponentSchema::CreateClassDeclaration();
   m2d::py::Screen::CreateClassDeclaration();
   m2d::py::Array::CreateClassDeclaration();
+  m2d::py::IntVector2D::CreateClassDeclaration();
+  //m2d::py::DoubleVector2D::CreateClassDeclaration();
 }

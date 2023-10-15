@@ -11,6 +11,7 @@ namespace py {
 class Screen {
  public:
   static bp::object CreateClassDeclaration();
+  static bp::object CreateColorEnumDeclaration();
 
   void SetScreen(hi::ScreenWeakPtr screen);
   bp::object GetKeyPressed() const;
@@ -20,9 +21,10 @@ class Screen {
   int GetId() const;
   void Clear();
 
-  void SelectColorPair(uint8_t pair_id);
+  void SelectColorPair(short pair_id);
   void MoveTo(int x, int y);
   void PrintW(const std::string& str);
+  void Refresh();
 
  private:
   hi::ScreenWeakPtr screen_;

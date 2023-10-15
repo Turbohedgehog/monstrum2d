@@ -18,6 +18,7 @@ class ECS {
   void SetECS(ecs::ECSWeakPtr ecs);
   Entity CreateEntity(bp::list component_names);
   bp::object GetOrCreateFilter(bp::list component_names);
+  void RemoveEntity(int entity_id);
 
  private:
   ecs::ECSWeakPtr ecs_;
