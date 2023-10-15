@@ -13,6 +13,9 @@ class Terminal {
   static bp::object CreateClassDeclaration();
   static Screen CreateScreen();
   static bp::object GetScreen(int id);
+  static void SetSize(int width, int height);
+  static int GetWidth();
+  static int GetHeight();
 
 };
 

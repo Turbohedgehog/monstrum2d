@@ -19,12 +19,11 @@ class Entity {
   void SetEntity(ecs::EntityWeakPtr entity);
 
   bp::object GetComponent(bp::object index) const;
+  int GetId() const;
   //bp::list GetComponents(bp::list indexes) const;
 
  private:
   ecs::EntityWeakPtr entity_;
-
-
 };
 
 }  // namespace py

@@ -44,7 +44,7 @@ void Screen::Update(float delta) {
   }
 }
 
-void Screen::SelectColorPair(uint8_t pair_id) {
+void Screen::SelectColorPair(short pair_id) {
   attrset(A_DIM | COLOR_PAIR(pair_id));
 }
 
@@ -68,28 +68,32 @@ void Screen::OnActivate() {
     init_pair(i, std::get<0>(colors), std::get<1>(colors));
   }
 
-  bkgd(clear_screen_pair_);
+  bkgd(COLOR_PAIR(clear_screen_pair_));
 }
 
 void Screen::OnDeactivate() {
   is_active_ = false;
 }
 
-void Screen::SetColorPair(uint8_t pair_id, uint8_t foreground, uint8_t background) {
+void Screen::SetColorPair(short pair_id, short foreground, short background) {
   color_scheme_[pair_id] = std::make_tuple(foreground, background);
   if (is_active_) {
     init_pair(pair_id, foreground, background);
   }
 }
 
-void Screen::SetClearColorPair(uint8_t pair_id) {
+void Screen::SetClearColorPair(short pair_id) {
   clear_screen_pair_ = pair_id;
 
-  Clear();
+  bkgd(COLOR_PAIR(clear_screen_pair_));
+  //Clear();
 }
 
 void Screen::Clear() {
-  bkgd(COLOR_PAIR(clear_screen_pair_));
+  clear();
+}
+
+void Screen::Refresh() {
 }
 
 }  // namespace hi

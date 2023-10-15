@@ -14,6 +14,8 @@
             name: key_down_timer
         - int:
             name: move_direction
+        - int:
+            name: collected_keys
 
 - component:
     name: coordinate
@@ -34,16 +36,16 @@
             name: type
 
 - component:
-    name: bound
+    name: key
     schema:
         - int:
-            name: width
+            name: id
+
+- component:
+    name: exit
+    schema:
         - int:
-            name: height
-        - int:
-            name: x_center
-        - int:
-            name: y_center
+            name: state
 
 - component:
     name: map

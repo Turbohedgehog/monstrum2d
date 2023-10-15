@@ -23,6 +23,13 @@ void Filter::ProcessEntity(EntityWeakPtr entity) {
   }
 }
 
+void Filter::RemoveEntity(EntityWeakPtr entity) {
+  auto it = entities_.find(entity.lock()->GetId());
+  if (it != entities_.end()) {
+    entities_.erase(it);
+  }
+}
+
 EntityMap& Filter::GetEnities() {
   return entities_;
 }

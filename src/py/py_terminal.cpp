@@ -10,6 +10,9 @@ bp::object Terminal::CreateClassDeclaration() {
   static bp::object class_decl =  bp::class_<m2d::py::Terminal>("Terminal")
       .def("create_screen", &Terminal::CreateScreen).staticmethod("create_screen")
       .def("get_screen", &Terminal::GetScreen).staticmethod("get_screen")
+      .def("set_size", &Terminal::SetSize, bp::args(("width"), ("height"))).staticmethod("set_size")
+      .def("get_width", &Terminal::GetWidth).staticmethod("get_width")
+      .def("get_height", &Terminal::GetHeight).staticmethod("get_height")
   ;
 
   return class_decl;
@@ -37,6 +40,18 @@ bp::object Terminal::GetScreen(int id) {
   screen.SetScreen(screen_ptr);
 
   return bp::object(screen);
+}
+
+void Terminal::SetSize(int width, int height) {
+  hi::Terminal::GetInstance().SetSize(width, height);
+}
+
+int Terminal::GetWidth() {
+  return hi::Terminal::GetInstance().GetWidth();
+}
+
+int Terminal::GetHeight() {
+  return hi::Terminal::GetInstance().GetHeight();
 }
 
 }  // namespace py

@@ -41,7 +41,8 @@ class SystemHandler {
  private:
   ecs::HolderWeakPtr ecs_holder_;
   std::map<std::string, SystemHolder> systems_;
-  std::map<PyObject*, bp::object> systems_to_update_;
+  //std::map<PyObject*, bp::object> systems_to_update_;
+  std::map<std::string, bp::object> systems_to_update_;
 };
 
 }  // namespace py

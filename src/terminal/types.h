@@ -4,6 +4,8 @@
 
 #include <optional>
 
+struct _win;
+
 namespace m2d {
 
 namespace hi {
