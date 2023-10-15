@@ -10,12 +10,13 @@ bp::object Screen::CreateClassDeclaration() {
   return bp::class_<m2d::py::Screen>("Screen")
       .def("get_id", &Screen::GetId)
       .def("get_key_pressed", &Screen::GetKeyPressed)
+      .def("clear", &Screen::Clear)
       .def("set_color_pair", &Screen::SetColorPair, bp::args(("pair_id"), ("foreground"), ("background")))
       .def("set_clear_color", &Screen::SetClearColorPair, bp::args(("pair_id")))
-
       .def("select_color_pair", &Screen::SelectColorPair, bp::args(("pair_id")))
       .def("move_to", &Screen::MoveTo, bp::args(("x"), ("y")))
       .def("print", &Screen::PrintW, bp::args(("str")))
+      .def("refresh", &Screen::Refresh)
   ;
 }
 
@@ -80,6 +81,10 @@ void Screen::MoveTo(int x, int y) {
 
 void Screen::PrintW(const std::string& str) {
   screen_.lock()->PrintW(str);
+}
+
+void Screen::Refresh() {
+  screen_.lock()->Refresh();
 }
 
 }  // namespace py

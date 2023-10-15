@@ -1,7 +1,0 @@
-- component:
-    name: keyboard
-    lifetime:
-        ticks: 1
-    schema:
-    - int:
-          name: pressed_key

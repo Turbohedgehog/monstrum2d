@@ -12,7 +12,7 @@ namespace hi {
 
 class Screen {
  public:
-  Screen(std::size_t id);
+  Screen(std::size_t id, _win* window);
   std::size_t GetId() const;
 
 
@@ -30,6 +30,7 @@ class Screen {
   void SelectColorPair(uint8_t pair_id);
   void MoveTo(int x, int y);
   void PrintW(const std::string& str);
+  void Refresh();
 
  private:
   std::size_t id_ = 0;
@@ -38,6 +39,7 @@ class Screen {
 
   std::array<std::tuple<uint8_t, uint8_t>, 8> color_scheme_;
   uint8_t clear_screen_pair_ = 0;
+  _win* window_ = nullptr;
 };
 
 }  // namespace hi

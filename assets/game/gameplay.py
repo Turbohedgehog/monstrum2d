@@ -20,6 +20,8 @@ class Gameplay(SystemBase):
   def __init__(self, system_handler):
     super().__init__(system_handler)
 
+    Terminal.set_size(120, 30)
+
     self.gameplay_screen = Terminal.create_screen()
     screen_id = self.gameplay_screen.get_id()
     self.holder = system_handler.get_holder()
@@ -44,6 +46,7 @@ class Gameplay(SystemBase):
 
     self.system_handler.enable_system_update(self)
 
+    #self.create_map(200, 200)
     self.create_map(40, 20)
     self.create_surviver()
 
@@ -55,8 +58,8 @@ class Gameplay(SystemBase):
   def create_surviver(self):
     surviver = self.gameplay_ecs.create_entity(["surviver", "coordinate", "bound"])
     coordinate_component = surviver.get_component("coordinate")
-    self.coordinate_schema.set_field(coordinate_component, "x", 10)
-    self.coordinate_schema.set_field(coordinate_component, "y", 10)
+    self.coordinate_schema.set_field(coordinate_component, "x", 5)
+    self.coordinate_schema.set_field(coordinate_component, "y", 5)
 
   def update_input(self, delta):
     key_pressed = self.gameplay_screen.get_key_pressed()
@@ -89,7 +92,7 @@ class Gameplay(SystemBase):
         nonlocal key_down_timer
         nonlocal move_direction
         if move_direction != direction.value:
-          key_down_timer = 0.0
+          key_down_timer = MOVE_TIME
           move_direction = direction.value
         else:
           key_down_timer += delta
@@ -171,12 +174,14 @@ class Gameplay(SystemBase):
         self.map_schema.set_field(map_component, ["tiles", x, y], ord(" "))
 
     wall = TileType.WALL.value | ord('#')
-    wall2 = TileType.WALL.value | ord('@')
+    #wall2 = TileType.WALL.value | ord('@')
     for x in range(width):
       self.map_schema.set_field(map_component, ["tiles", x, 0], wall)
       self.map_schema.set_field(map_component, ["tiles", x, height - 1], wall)
 
     for y in range(1, height - 1):
-      self.map_schema.set_field(map_component, ["tiles", 0, y], wall2)
-      self.map_schema.set_field(map_component, ["tiles", width - 1, y], wall2)
+      self.map_schema.set_field(map_component, ["tiles", 0, y], wall)
+      self.map_schema.set_field(map_component, ["tiles", width - 1, y], wall)
+      #self.map_schema.set_field(map_component, ["tiles", 0, y], TileType.WALL.value | ord('a') + y)
+      #self.map_schema.set_field(map_component, ["tiles", width - 1, y], TileType.WALL.value | ord('a') + y)
     

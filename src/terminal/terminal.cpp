@@ -42,11 +42,14 @@ ScreenWeakPtr Terminal::AppendScreen() {
   if (active_screens_.empty()) {
     auto screen = initscr();
     keypad(screen, true);
+    start_color();
     noecho();
     curs_set(0);
+    raw();
+    //window_ = newwin(height_, width_, 0, 0);
   }
 
-  auto screen = std::make_shared<Screen>(active_screen_counter_);
+  auto screen = std::make_shared<Screen>(active_screen_counter_, window_);
   active_screens_[active_screen_counter_] = screen;
   if (!active_screen_) {
     active_screen_ = screen;
@@ -63,7 +66,12 @@ void Terminal::Sleep(int milliseconds) {
 }
 
 void Terminal::Shutdown() {
-  endwin();
+  if (window_) {
+    delwin(window_);
+    endwin();
+  }
+
+  window_ = nullptr;
 }
 
 ScreenWeakPtr Terminal::GetScreen(std::size_t id) const {
@@ -90,6 +98,19 @@ ScreenWeakPtr Terminal::SetActiveScreen(std::size_t id) {
   }
 
   return screen;
+}
+
+void Terminal::SetSize(int width, int height) {
+  width_ = width;
+  height_ = height;
+}
+
+int Terminal::GetWidth() const {
+  return width_;
+}
+
+int Terminal::GetHeight() const {
+  return height_;
 }
 
 }  // namespace hi
