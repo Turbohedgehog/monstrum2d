@@ -37,7 +37,7 @@ void Screen::Update(float delta) {
   
   int key = getch();
   if (key > 0) { 
-    printw("   %d", key);
+    //printw("   %d", key);
     SetKeyPressed(key);
   } else {
     SetKeyPressed(std::nullopt);

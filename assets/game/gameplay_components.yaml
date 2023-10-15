@@ -9,7 +9,11 @@
 
 - component:
     name: surviver
-    schema: []
+    schema:
+        - double:
+            name: key_down_timer
+        - int:
+            name: move_direction
 
 - component:
     name: coordinate

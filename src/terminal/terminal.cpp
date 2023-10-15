@@ -43,6 +43,7 @@ ScreenWeakPtr Terminal::AppendScreen() {
     auto screen = initscr();
     keypad(screen, true);
     noecho();
+    curs_set(0);
   }
 
   auto screen = std::make_shared<Screen>(active_screen_counter_);
