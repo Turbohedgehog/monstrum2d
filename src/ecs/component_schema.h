@@ -64,9 +64,20 @@ class ComponentPrimitiveField : public ComponentField {
   T default_value_;
 };
 
-using ComponentFieldPtr = std::shared_ptr<ComponentField>;
+class ComponentArray : public ComponentField {
+ public:
+  ComponentArray(ComponentFieldPtr content);
 
-// class ComponentArray : public ComponentField {};
+  ComponentDataPtr AllocateData(ECSWeakPtr ecs) const override;
+  ComponentFiledType GetType() const override;
+  ComponentDataPtr AccessToComponentData(
+      ComponentDataPtr component_data,
+      const FieldIndexContainer& indices,
+      std::size_t idx) const override;
+
+ private:
+  ComponentFieldPtr content_;
+};
 
 class ComponentStruct : public ComponentField {
  public:

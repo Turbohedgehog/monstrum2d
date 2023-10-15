@@ -2,6 +2,7 @@
 
 #include "ecs/entity.h"
 #include "ecs/component.h"
+#include "ecs/filter.h"
 
 namespace m2d {
 
@@ -16,6 +17,10 @@ ComponentPtr Pool::AllocateComponent(
     std::size_t enity_id,
     ComponentDataPtr data) {
   return std::make_shared<Component>(type_id, enity_id, data);
+}
+
+FilterPtr Pool::AllocateFilter(ECSWeakPtr ecs, const ComponentBitmask& component_bitmask) {
+  return std::make_shared<Filter>(ecs, component_bitmask);
 }
 
 }  // namespace ecs

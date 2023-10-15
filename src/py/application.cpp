@@ -26,11 +26,8 @@ Application::Application(ecs::HolderWeakPtr ecs_holder)
   builtins_module_ = global_["__builtins__"];
   inspect_module_ = bp::import("inspect");
   bp::object core_module = bp::import("Core");
-  global_["Core"] = core_module;
   system_base_class_ = core_module.attr("SystemBase");
-  //auto t = core_module.attr("Terminal");
-  //auto tt = t();
-  //auto ttt = tt.attr("create_screen")();
+  
 
   system_handler_ = std::make_shared<SystemHandler>();
   system_handler_->RegisterHandlerClass();
@@ -54,12 +51,9 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
     return;
   }
 
-  #if 0
-  #else
-
   try {
     bp::dict local;
-    bp::exec(py_script.c_str(), global_, local);
+    bp::exec(py_script.c_str(), local, local);
     bp::list items = local.items();
     for (bp::ssize_t i = 0; i < bp::len(items); ++i) {
       bp::tuple key_value = bp::extract<bp::tuple>(items[i]);
@@ -85,7 +79,6 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
     PyErr_Print();
     throw;
   }
-  #endif
 }
 
 void Application::InitSystems() {

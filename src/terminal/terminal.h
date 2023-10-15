@@ -22,7 +22,9 @@ class Terminal {
   ScreenWeakPtr AppendScreen();
   void Update(float delta);
   void Sleep(int milliseconds);
+  ScreenWeakPtr GetScreen(std::size_t id) const;
   void Shutdown();
+  ScreenWeakPtr SetActiveScreen(std::size_t id);
 
  private:
   Terminal();

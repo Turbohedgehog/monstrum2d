@@ -17,14 +17,16 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
   std::size_t GetId() const;
   ECSWeakPtr GetECS() const;
-  void AddComponents(const std::vector<std::string>& components = {});
+  void AddComponents(const std::vector<StringIndex>& components = {});
 
   ComponentWeakPtr GetComponent(const StringIndex& index) const;
   bool Tick(float delta);
+  const ComponentBitmask& GetComponentBitmask() const;
 
  private:
   std::size_t id_;
   ECSWeakPtr ecs_;
+  ComponentBitmask component_bitmask_;
   std::map<std::size_t, ComponentPtr> components_;
 };
 
