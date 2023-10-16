@@ -43,6 +43,7 @@ class Render(SystemBase):
       #self.screen.clear()
       surviver = self.get_surviver()
       if surviver:
+        self.screen.clear()
         x, y = self.get_surviver_location(surviver)
         screen_width = Terminal.get_width()
         screen_height = Terminal.get_height()

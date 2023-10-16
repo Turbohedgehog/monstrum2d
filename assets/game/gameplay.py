@@ -1,7 +1,10 @@
-from Core import SystemBase
-from Core import Terminal
+import random
+
 from enum import Enum
 
+from Core import SystemBase
+from Core import Terminal
+from Core import IntVector2D
 
 class MoveDirection(Enum):
   STOP = 0
@@ -15,6 +18,7 @@ class TileType(Enum):
   WALL = 1 << 8
 
 MOVE_TIME = 0.05
+
 
 class Gameplay(SystemBase):
   def __init__(self, system_handler):
@@ -46,9 +50,15 @@ class Gameplay(SystemBase):
 
     self.system_handler.enable_system_update(self)
 
-    #self.create_map(200, 200)
-    self.create_map(40, 20)
-    self.create_surviver()
+    #self.create_maze(1000, 1000, 4, 10)
+    try:
+      self.create_maze(IntVector2D(1000, 1000), IntVector2D(4, 4), IntVector2D(10, 10))
+      self.create_map(200, 200)
+      #self.create_map(40, 20)
+      self.create_surviver()
+    except Exception as ex:
+      print(ex)
+      raise
 
   def update(self, delta):
     super().update(delta)
@@ -156,7 +166,22 @@ class Gameplay(SystemBase):
       print(f"~ {ex}")
       raise
 
-
+  def create_maze(self, map_size: IntVector2D, min_room_size: IntVector2D, max_room_size: IntVector2D):
+    print(min_room_size)
+    sum = min_room_size + max_room_size
+    average_size = sum / 2
+    cell_count = map_size / average_size
+    if cell_count.x == 0 or cell_count.y == 0:
+      return None
+    rooms = []
+    for x in range(cell_count.x):
+      rooms.extend([
+        (x, y, IntVector2D(
+          random.randint(min_room_size.x, max_room_size.x),
+          random.randint(min_room_size.y, max_room_size.y)))
+          for y in range(cell_count.y)])
+    random.shuffle(rooms)
+    print(rooms)
 
   def create_map(self, width, height):
     map_entity = self.map_ecs.create_entity(["map"])
@@ -171,7 +196,8 @@ class Gameplay(SystemBase):
 
     for x in range(width):
       for y in range(height):
-        self.map_schema.set_field(map_component, ["tiles", x, y], ord(" "))
+        t = "." if random.randint(1, 20) <= 1 else " "
+        self.map_schema.set_field(map_component, ["tiles", x, y], ord(t))
 
     wall = TileType.WALL.value | ord('#')
     #wall2 = TileType.WALL.value | ord('@')

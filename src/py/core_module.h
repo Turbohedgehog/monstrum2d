@@ -12,6 +12,7 @@
 #include "py/py_terminal.h"
 #include "py/py_screen.h"
 #include "py/py_array.h"
+#include "py/py_vector2d.h"
 
 BOOST_PYTHON_MODULE(Core) {
   PyEval_InitThreads();
@@ -27,4 +28,6 @@ BOOST_PYTHON_MODULE(Core) {
   m2d::py::ComponentSchema::CreateClassDeclaration();
   m2d::py::Screen::CreateClassDeclaration();
   m2d::py::Array::CreateClassDeclaration();
+  m2d::py::IntVector2D::CreateClassDeclaration();
+  //m2d::py::DoubleVector2D::CreateClassDeclaration();
 }
