@@ -138,6 +138,7 @@ class IntVector2D {
   IntVector2D& operator *= (int scale);
   IntVector2D& operator /= (int scale);
   IntVector2D& operator /= (const IntVector2D& other);
+  IntVector2D operator-() const;
 
   int X() const;
   int Y() const;

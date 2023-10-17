@@ -19,6 +19,7 @@ bp::object IntVector2D::CreateClassDeclaration() {
       .def("make_unit_vector", &IntVector2D::MakeUnitVector)
       .def("__eq__", &IntVector2D::operator==)
       .def("__ne__", &IntVector2D::operator!=)
+      .def("__neg__", &IntVector2D::operator-)
       .def(bp::self += bp::self)
       .def(bp::self + bp::self)
       .def(bp::self -= bp::self)
@@ -100,6 +101,10 @@ bool IntVector2D::operator==(const IntVector2D& other) const {
 
 bool IntVector2D::operator!=(const IntVector2D& other) const {
   return !operator==(other);
+}
+
+IntVector2D IntVector2D::operator - () const {
+  return IntVector2D(-x_, -y_);
 }
 
 IntVector2D& IntVector2D::operator += (const IntVector2D& other) {
