@@ -8,9 +8,8 @@ namespace m2d {
 
 namespace hi {
 
-Screen::Screen(std::size_t id, _win* window)
-    : id_(id)
-    , window_(window) {
+Screen::Screen(std::size_t id)
+    : id_(id) {
   for (auto i = 0 ; i < color_scheme_.size(); ++i) {
     color_scheme_[i] = std::make_tuple<uint8_t, uint8_t>(COLOR_WHITE, COLOR_BLACK);
   }
@@ -50,12 +49,10 @@ void Screen::SelectColorPair(short pair_id) {
 }
 
 void Screen::MoveTo(int x, int y) {
-  //wmove(window_, y, x);
   move(y, x);
 }
 
 void Screen::PrintW(const std::string& str) {
-  //wprintw(window_, str.c_str());
   printw(str.c_str());
 }
 
@@ -71,11 +68,7 @@ void Screen::OnActivate() {
     init_pair(i, std::get<0>(colors), std::get<1>(colors));
   }
 
-  //wbkgd(window_, clear_screen_pair_);
   bkgd(COLOR_PAIR(clear_screen_pair_));
-
-  //init_pair(1, COLOR_WHITE, COLOR_BLUE);
-  //bkgd(COLOR_PAIR(1));
 }
 
 void Screen::OnDeactivate() {
@@ -97,13 +90,10 @@ void Screen::SetClearColorPair(short pair_id) {
 }
 
 void Screen::Clear() {
-  //bkgd(COLOR_PAIR(clear_screen_pair_));
   clear();
-  //wclear(window_);
 }
 
 void Screen::Refresh() {
-  //wrefresh(window_);
 }
 
 }  // namespace hi

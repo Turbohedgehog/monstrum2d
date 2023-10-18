@@ -32,7 +32,6 @@ class Terminal {
   //std::ostream ostream_;
   int height_ = 0;
   int width_ = 0;
-  _win* window_ = nullptr;
 };
 
 }  // namespace hi
