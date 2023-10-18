@@ -62,14 +62,10 @@ class Gameplay(SystemBase):
 
     self.system_handler.enable_system_update(self)
 
-    #self.create_maze(1000, 1000, 4, 10)
     try:
       map_size = IntVector2D(300, 300)
-      #map_size = IntVector2D(40, 40)
-      maze = Gameplay.create_maze(map_size, IntVector2D(4, 4), IntVector2D(10, 10))
-      #self.create_maze(IntVector2D(120, 30), IntVector2D(4, 4), IntVector2D(10, 10))
-      #self.create_map(200, 200)
-      #self.create_map(40, 20)
+      maze = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
+      Gameplay.cleanup_maze(maze)
       self.create_map(maze)
       self.create_surviver(map_size)
     except Exception as ex:
@@ -91,7 +87,8 @@ class Gameplay(SystemBase):
   def update_input(self, delta):
     key_pressed = self.gameplay_screen.get_key_pressed()
     if key_pressed is not None:
-      if key_pressed == 27 or chr(key_pressed) == 'q':
+      #if key_pressed == 27 or chr(key_pressed) == 'q':
+      if key_pressed == 27:
         self.holder.shutdown()
 
     self.update_player_movement(delta, key_pressed)
@@ -184,10 +181,10 @@ class Gameplay(SystemBase):
       raise
   
   @staticmethod
-  def iterate_maze(maze_size: IntVector2D, maze_data):
+  def iterate_maze(start_pos: IntVector2D, maze_size: IntVector2D, maze_data, min_room_size: IntVector2D, max_room_size: IntVector2D):
     max_path_len = 20
     turtle_moves = 100
-    point = maze_size / 2
+    point = start_pos
     move_directions = [
       IntVector2D(1, 0),
       IntVector2D(0, 1),
@@ -196,6 +193,24 @@ class Gameplay(SystemBase):
     ]
 
     direction_idx = -1
+
+    def create_room(pos: IntVector2D):
+      room_with = random.randint(min_room_size.x, max_room_size.x)
+      room_height = random.randint(min_room_size.y, max_room_size.y)
+      size = IntVector2D(room_with, room_height)
+
+      left_top_corner = pos - size / 2
+      left_top_corner.x = max(0, left_top_corner.x)
+      left_top_corner.y = max(0, left_top_corner.y)
+
+      right_down_corner = pos + size / 2
+      right_down_corner.x = min(maze_size.x - 1, right_down_corner.x)
+      right_down_corner.y = min(maze_size.y - 1, right_down_corner.y)
+
+      for x in range(left_top_corner.x, right_down_corner.x):
+        for y in range(left_top_corner.y, right_down_corner.y):
+          maze_data[x][y] = " "
+      
 
     for _ in range(turtle_moves):
       new_direction_idx = random.randint(0, 3)
@@ -206,11 +221,7 @@ class Gameplay(SystemBase):
       dir = move_directions[direction_idx]
       path_len = random.randint(1, max_path_len)
       
-      #print(f"direction_idx = {direction_idx}")
-      #print(f"path_len = {path_len}")
-      #print(f"dir = {dir.x, dir.y}")
       for _ in range(path_len):
-        #print(f"point = {point.x, point.y}")
         maze_data[point.x][point.y] = " "
         point += dir
         if point.x >= maze_size.x or point.x < 0:
@@ -223,6 +234,10 @@ class Gameplay(SystemBase):
           point.y = max(0, min(point.y, maze_size.y))
           point.y += dir.y
           break
+
+      if random.randint(0, 20) == 0:
+        create_room(point)
+
   @staticmethod
   def create_maze(map_size: IntVector2D, min_room_size: IntVector2D, max_room_size: IntVector2D):
     #map_data = [["#"] * map_size.y] * map_size.x
@@ -230,102 +245,52 @@ class Gameplay(SystemBase):
     for x in range(map_size.x):
       map_data[x] = ['#'] * map_size.y
 
-    for _ in range(10):
-      Gameplay.iterate_maze(map_size, map_data)
-
-    '''
-    for m in map_data:
-      s = "".join(m)
-      print(s)
-    '''
-    return map_data
-
-  @staticmethod
-  def create_maze_3(map_size: IntVector2D, min_room_size: IntVector2D, max_room_size: IntVector2D):
-    map_data = [["#"] * map_size.y] * map_size.x
-    #branch_count = 200
-    branch_count = 1
-    def turn_dir_left(dir: IntVector2D):
-      return IntVector2D(-dir.y, dir.x)
-  
-    def turn_dir_right(dir: IntVector2D):
-      return -turn_dir_left(dir)
-  
-    def create_corridors(start_direction: IntVector2D):
-      count = random.randint(CORRIDOR_BRANCHE_COUNT[0], CORRIDOR_BRANCHE_COUNT[1])
-      direction = start_direction
-      corridors = []
-      for _ in range(count):
-        lenght = random.randint(CORRIDOR_LENGHT[0], CORRIDOR_LENGHT[1])
-        corridors.append(direction * lenght)
-        direction = turn_dir_right(direction) if random.randint(0, 1) == 0 else turn_dir_left(direction)
-      return corridors
-    
-    def create_corridor_branch(position: IntVector2D, directions: list[IntVector2D]):
-      nonlocal branch_count
-      #print(branch_count)
-      #res = []
-      next_points = []
-      for dir in directions:
-        branch_count -= 1
-        if branch_count <= 0:
-          break
-        corridors = create_corridors(dir)
-        next_point = sum(corridors, IntVector2D())
-        next_point += position
-        #next_point = sum(corridors) + position
-        if abs(next_point.x) > map_size.x or abs(next_point.y) > map_size.y:
-          continue
-
-        last_corridor = corridors[-1]
-        last_direction = IntVector2D(sign(last_corridor.x), sign(last_corridor.y))
-        next_points.append((next_point, last_direction, corridors))
-
-        #next_btanches.append((position, corridors))
-
-      res = []
-      for next_point in next_points:
-        res.append((position, next_point[2]))
-        if branch_count < 0:
-          continue
-        pos = next_point[0]
-        last_direction = next_point[1]
-        next_directions = []
-        if random.randint(1, 5) == 1:
-          next_directions.append(turn_dir_left(last_direction))
-        next_directions.append(last_direction)
-        if random.randint(1, 5) == 1:
-          next_directions.append(turn_dir_right(last_direction))
-
-        res.extend(create_corridor_branch(pos, next_directions))
-      return res
-
     start_pos = map_size / 2
-    start_directions = [
-      IntVector2D(1, 0),
-      IntVector2D(0, 1),
-      IntVector2D(-1, 0),
-      IntVector2D(0, -1),
-    ]
+    for _ in range(30):
+      Gameplay.iterate_maze(start_pos, map_size, map_data, min_room_size, max_room_size)
+      start_pos.x = random.randint(0, map_size.x - 1)
+      start_pos.y = random.randint(0, map_size.y - 1)
 
-    corridor_branches = create_corridor_branch(start_pos, start_directions)
-    print(f"corridor_branches = {len(corridor_branches)}")
+    return map_data
+  
+  @staticmethod
+  def cleanup_maze(maze_data):
+    width = len(maze_data)
+    if width == 0:
+      return
+    height = len(maze_data[0])
+    if height == 0:
+      return
+    
+    space_check = [
+      IntVector2D(-1, -1), IntVector2D(0, -1), IntVector2D(1, -1),
+      IntVector2D(-1, 0), IntVector2D(1, 0),
+      IntVector2D(-1, 1), IntVector2D(0, 1), IntVector2D(1, 1),
+      ]
+    def has_any_space(point: IntVector2D):
+      for check in space_check:
+        c = point + check
+        if c.x < 0 or c.x >= width:
+          continue
+        if c.y < 0 or c.y >= width:
+          continue
+        if maze_data[c.x][c.y] == " ":
+          return True
+      return False
 
-    for corridor_branch in corridor_branches:
-      point = corridor_branch[0]
-      corridors = corridor_branch[1]
-      for corridor in corridors:
-        #ZERO_VECTOR
-        c = corridor
-        c_dir = create_dir_vector(c)
-        while c != ZERO_VECTOR:
-          map_data[point.x][point.y] = " "
-          c -= c_dir
 
-      for m in map_data:
-        s = "".join(m)
-        print(s)
-      return map_data
+    for x in range(width):
+      for y in range(height):
+        if not has_any_space(IntVector2D(x, y)):
+          maze_data[x][y] = "~"
+
+    '''
+    for x in range(width):
+      for y in range(height):
+        if maze_data[x][y] == "~":
+          maze_data[x][y] = " "
+    '''
+
 
   def create_map(self, maze_data):
     width = len(maze_data)
@@ -351,34 +316,5 @@ class Gameplay(SystemBase):
     for x in range(width):
       for y in range(height):
         value = maze_data[x][y]
-        tile = space if value == " " else wall
+        tile = space if value == " " else TileType.WALL.value | ord(value)
         self.map_schema.set_field(map_component, ["tiles", x, y], tile)
-
-  def create_map_2(self, width, height):
-    map_entity = self.map_ecs.create_entity(["map"])
-    map_component = map_entity.get_component("map")
-    self.map_schema.set_field(map_component, "width", width)
-    self.map_schema.set_field(map_component, "height", height)
-    map_data = self.map_schema.get_field(map_component, "tiles")
-    map_data.resize(width)
-    for i in range(width):
-      map_col = self.map_schema.get_field(map_component, ["tiles", i])
-      map_col.resize(height)
-
-    for x in range(width):
-      for y in range(height):
-        t = "*" if random.randint(1, 100) <= 1 else " "
-        self.map_schema.set_field(map_component, ["tiles", x, y], ord(t))
-
-    wall = TileType.WALL.value | ord('#')
-    #wall2 = TileType.WALL.value | ord('@')
-    for x in range(width):
-      self.map_schema.set_field(map_component, ["tiles", x, 0], wall)
-      self.map_schema.set_field(map_component, ["tiles", x, height - 1], wall)
-
-    for y in range(1, height - 1):
-      self.map_schema.set_field(map_component, ["tiles", 0, y], wall)
-      self.map_schema.set_field(map_component, ["tiles", width - 1, y], wall)
-      #self.map_schema.set_field(map_component, ["tiles", 0, y], TileType.WALL.value | ord('a') + y)
-      #self.map_schema.set_field(map_component, ["tiles", width - 1, y], TileType.WALL.value | ord('a') + y)
-    

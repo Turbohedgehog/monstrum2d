@@ -2,9 +2,58 @@
 
 #include "terminal/screen.h"
 
+#include "curses.h"
+
 namespace m2d {
 
 namespace py {
+
+#if 0
+#define COLOR_BLACK   0
+
+#ifdef PDC_RGB        /* RGB */
+# define COLOR_RED    1
+# define COLOR_GREEN  2
+# define COLOR_BLUE   4
+#else                 /* BGR */
+# define COLOR_BLUE   1
+# define COLOR_GREEN  2
+# define COLOR_RED    4
+#endif
+
+#define COLOR_CYAN    (COLOR_BLUE | COLOR_GREEN)
+#define COLOR_MAGENTA (COLOR_RED | COLOR_BLUE)
+#define COLOR_YELLOW  (COLOR_RED | COLOR_GREEN)
+
+#define COLOR_WHITE   7
+
+#endif
+
+//enum class Color1 {
+enum Color {
+  Black = COLOR_BLACK,
+  While = COLOR_WHITE,
+  Red = COLOR_RED,
+  Green = COLOR_GREEN,
+  Blue = COLOR_BLUE,
+  Cyan = COLOR_CYAN,
+  Magenta = COLOR_MAGENTA,
+  Yellow = COLOR_YELLOW,
+};
+
+bp::object Screen::CreateColorEnumDeclaration() {
+  return bp::enum_<Color>("Color")
+      .value("Black", Black)
+      .value("While", While)
+      .value("Red", Red)
+      .value("Green", Green)
+      .value("Blue", Blue)
+      .value("Cyan", Cyan)
+      .value("Magenta", Magenta)
+      .value("Yellow", Yellow)
+      //.export_values()
+      ;
+}
 
 bp::object Screen::CreateClassDeclaration() {
   return bp::class_<m2d::py::Screen>("Screen")
@@ -46,9 +95,9 @@ void Screen::SetColorPair(int pair_id, int foreground, int background) {
     return;
   }
 
-  auto p = static_cast<uint8_t>(pair_id);
-  auto f = static_cast<uint8_t>(foreground);
-  auto b = static_cast<uint8_t>(background);
+  auto p = static_cast<short>(pair_id);
+  auto f = static_cast<short>(foreground);
+  auto b = static_cast<short>(background);
 
   screen_.lock()->SetColorPair(p, f, b);
 }
@@ -58,7 +107,7 @@ void Screen::SetClearColorPair(int pair_id) {
     return;
   }
 
-  auto p = static_cast<uint8_t>(pair_id);
+  auto p = static_cast<short>(pair_id);
 
   screen_.lock()->SetClearColorPair(p);
 }
@@ -71,7 +120,7 @@ void Screen::Clear() {
   screen_.lock()->Clear();
 }
 
-void Screen::SelectColorPair(uint8_t pair_id) {
+void Screen::SelectColorPair(short pair_id) {
   screen_.lock()->SelectColorPair(pair_id);
 }
 

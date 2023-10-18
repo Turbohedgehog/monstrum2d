@@ -1,9 +1,10 @@
 from Core import SystemBase
 from Core import Terminal
+from Core import Color
 
 
-#TERMINAL_SIZE = (120, 30)
-#TERMINAL_SIZE_HALF = TERMINAL_SIZE / 2
+MAP_COLOR_PAIR = 1
+SURVIVER_COLOR_PAIR = 2
 
 class Render(SystemBase):
   def __init__(self, system_handler):
@@ -40,7 +41,6 @@ class Render(SystemBase):
       return
     
     try:
-      #self.screen.clear()
       surviver = self.get_surviver()
       if surviver:
         self.screen.clear()
@@ -58,12 +58,35 @@ class Render(SystemBase):
     if self.screen is not None:
       return True
     
-    for state_entity in self.gameplay_state_filter:
-      gameplay_state = state_entity.get_component("gameplay_state")
-      screen_id = self.gameplay_state_schema.get_field(gameplay_state, "screen_id")
-      self.screen = Terminal.get_screen(screen_id)
-
-    return self.screen is not None
+    try:
+      
+      #print(f"type(Render) = {type(Render)}")
+      #print(f"type(Color1) = {type(Color)}")
+      #print(f"Color.__class__ = {Color.__class__}")
+      #c = list(Color)
+      #print(f"colors = {c}")
+      #print(c)
+      #print(f"colors = {[e.value for e in Color]}")
+      for state_entity in self.gameplay_state_filter:
+        gameplay_state = state_entity.get_component("gameplay_state")
+        screen_id = self.gameplay_state_schema.get_field(gameplay_state, "screen_id")
+        self.screen = Terminal.get_screen(screen_id)
+      
+      if not self.screen:
+        return False
+      
+      #self.screen.set_color_pair(1, Color.White, Color.Black)
+      # Scene
+      self.screen.set_color_pair(MAP_COLOR_PAIR, 7, 0)
+      # Surviver
+      self.screen.set_color_pair(SURVIVER_COLOR_PAIR, 2, 0)
+      self.screen.set_clear_color(MAP_COLOR_PAIR)
+      self.screen.clear()
+    except Exception as ex:
+      print(ex)
+      raise
+    
+    return True
   
   def get_surviver(self):
     return next((surviver for surviver in self.surviver_filter), None)
@@ -76,6 +99,7 @@ class Render(SystemBase):
 
   def draw_surviver(self, screen_size: tuple):
     self.screen.move_to(int(screen_size[0] / 2), int(screen_size[1] / 2))
+    self.screen.select_color_pair(SURVIVER_COLOR_PAIR)
     self.screen.print("@")
 
   def draw_map(self, surviver_xy: tuple, screen_size: tuple):
@@ -89,8 +113,6 @@ class Render(SystemBase):
     screen_width_half = int(screen_width / 2)
     screen_height_half = int(screen_height / 2)
     
-    #start_draw_loc = surviver_xy - screen_size_half
-    #end_draw_loc = start_draw_loc + screen_size
     
     map_component = map_entity.get_component("map")
     map_width = self.map_schema.get_field(map_component, "width")
@@ -101,7 +123,7 @@ class Render(SystemBase):
     screen_width_to = screen_width_from + screen_width
     #screen_height_to = screen_height_from + screen_height
 
-    
+    self.screen.select_color_pair(MAP_COLOR_PAIR)
     for y in range(screen_height):
       map_y = screen_height_from + y
       if map_y < 0 or map_y >= map_height:
@@ -115,15 +137,3 @@ class Render(SystemBase):
             s += chr(self.map_schema.get_field(map_component, ["tiles", x, map_y]) & 255)
       self.screen.move_to(0, y)
       self.screen.print(s)
-
-    #self.screen.move_to(10, 10)
-    #self.screen.print("1")
-    #self.screen.refresh()
-
-
-    '''
-    for y in range(height):
-      s = ''.join(chr(self.map_schema.get_field(map_component, ["tiles", x, y]) & 255) for x in range(width))
-      self.screen.move_to(0, y)
-      self.screen.print(s)
-    '''

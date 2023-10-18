@@ -15,8 +15,11 @@
 #include "py/py_vector2d.h"
 
 BOOST_PYTHON_MODULE(Core) {
-  PyEval_InitThreads();
-  bp::scope().attr("__path__") = "Core";
+  //PyEval_InitThreads();
+
+  m2d::py::Screen::CreateColorEnumDeclaration();
+
+  //bp::scope().attr("__path__") = "Core";
   
   m2d::py::Terminal::CreateClassDeclaration();
   m2d::py::SystemBase::CreateClassDeclaration();
