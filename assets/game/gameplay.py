@@ -21,6 +21,7 @@ MOVE_TIME = 0.05
 CORRIDOR_BRANCHE_COUNT = (1, 3)
 CORRIDOR_LENGHT = (5, 15)
 ZERO_VECTOR = IntVector2D(0, 0)
+KEY_COUNT = 4
 
 def sign(value):
   if value > 0:
@@ -56,18 +57,30 @@ class Gameplay(SystemBase):
     self.gameplay_state_schema.set_field(gameplay_state, "screen_id", screen_id)
 
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
-    self.bound_schema = self.holder.get_component_schema("bound")
+    #self.bound_schema = self.holder.get_component_schema("bound")
     self.surviver_schema = self.holder.get_component_schema("surviver")
-    self.surviver_filter = self.gameplay_ecs.get_or_create_filter(["surviver", "coordinate", "bound"])
+    self.surviver_filter = self.gameplay_ecs.get_or_create_filter(["surviver", "coordinate"])
+
+    self.key_schema = self.holder.get_component_schema("key")
+    self.key_filter = self.gameplay_ecs.get_or_create_filter(["key", "coordinate"])
+
+    self.exit_schema = self.holder.get_component_schema("exit")
+    self.exit_filter = self.gameplay_ecs.get_or_create_filter(["exit", "coordinate"])
 
     self.system_handler.enable_system_update(self)
 
     try:
       map_size = IntVector2D(300, 300)
-      maze = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
+      #map_size = IntVector2D(100, 100)
+      spawn_pos = map_size / 2
+      maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
+      self.create_keys(start_points, KEY_COUNT)
+      #self.create_keys([spawn_pos, spawn_pos, spawn_pos, spawn_pos], KEY_COUNT)
+      
+      self.create_exit(spawn_pos)
       Gameplay.cleanup_maze(maze)
       self.create_map(maze)
-      self.create_surviver(map_size)
+      self.create_surviver(spawn_pos)
     except Exception as ex:
       print(ex)
       raise
@@ -77,10 +90,32 @@ class Gameplay(SystemBase):
 
     self.update_input(delta)
 
-  def create_surviver(self, map_size):
-    surviver = self.gameplay_ecs.create_entity(["surviver", "coordinate", "bound"])
+  def create_keys(self, start_points, count):
+    count = min(count, len(start_points))
+    if count == 0:
+      return
+    
+    key_points = random.sample(start_points, count)
+    for i, key_point in enumerate(key_points):
+      print(f"key[{i}] = {key_point.x, key_point.y}")
+      key_entity = self.gameplay_ecs.create_entity(["key", "coordinate"])
+
+      coordinate_component = key_entity.get_component("coordinate")
+      self.coordinate_schema.set_field(coordinate_component, "x", key_point.x)
+      self.coordinate_schema.set_field(coordinate_component, "y", key_point.y)
+
+      key_component = key_entity.get_component("key")
+      self.key_schema.set_field(key_component, "id", i)
+
+  def create_exit(self, position: IntVector2D):
+    exit = self.gameplay_ecs.create_entity(["exit", "coordinate"])
+    coordinate_component = exit.get_component("coordinate")
+    self.coordinate_schema.set_field(coordinate_component, "x", position.x)
+    self.coordinate_schema.set_field(coordinate_component, "y", position.y)
+
+  def create_surviver(self, spawn_pos: IntVector2D):
+    surviver = self.gameplay_ecs.create_entity(["surviver", "coordinate"])
     coordinate_component = surviver.get_component("coordinate")
-    spawn_pos = map_size / 2
     self.coordinate_schema.set_field(coordinate_component, "x", spawn_pos.x)
     self.coordinate_schema.set_field(coordinate_component, "y", spawn_pos.y)
 
@@ -246,12 +281,14 @@ class Gameplay(SystemBase):
       map_data[x] = ['#'] * map_size.y
 
     start_pos = map_size / 2
+    start_points = []
     for _ in range(30):
       Gameplay.iterate_maze(start_pos, map_size, map_data, min_room_size, max_room_size)
       start_pos.x = random.randint(0, map_size.x - 1)
       start_pos.y = random.randint(0, map_size.y - 1)
+      start_points.append(IntVector2D(start_pos.x, start_pos.y))
 
-    return map_data
+    return map_data, start_points
   
   @staticmethod
   def cleanup_maze(maze_data):
@@ -312,7 +349,7 @@ class Gameplay(SystemBase):
       map_col.resize(height)
 
     space = ord(" ")
-    wall = TileType.WALL.value | ord('#')
+    #wall = TileType.WALL.value | ord('#')
     for x in range(width):
       for y in range(height):
         value = maze_data[x][y]

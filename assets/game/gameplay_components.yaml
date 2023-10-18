@@ -14,6 +14,9 @@
             name: key_down_timer
         - int:
             name: move_direction
+        - array:
+            name: keys
+            content: int
 
 - component:
     name: coordinate
@@ -44,6 +47,18 @@
             name: x_center
         - int:
             name: y_center
+
+- component:
+    name: key
+    schema:
+        - int:
+            name: id
+
+- component:
+    name: exit
+    schema:
+        - int:
+            name: state
 
 - component:
     name: map
