@@ -21,7 +21,7 @@ class ECS : public std::enable_shared_from_this<ECS> {
   PoolWeakPtr GetPool() const;
   FilterWeakPtr GetOrCreateFilter(const std::vector<StringIndex>& components);
   void Tick(float delta);
-
+  void RemoveEntity(std::size_t enity_id);
 
  private:
   std::string name_;

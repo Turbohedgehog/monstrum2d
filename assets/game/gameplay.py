@@ -2,6 +2,8 @@ import random
 
 from enum import Enum
 
+#import locale
+
 from Core import SystemBase
 from Core import Terminal
 from Core import IntVector2D
@@ -21,7 +23,10 @@ MOVE_TIME = 0.05
 CORRIDOR_BRANCHE_COUNT = (1, 3)
 CORRIDOR_LENGHT = (5, 15)
 ZERO_VECTOR = IntVector2D(0, 0)
-KEY_COUNT = 4
+#KEY_COUNT = 4
+KEY_COUNT = 1
+
+BORDER_SIZE = 1
 
 def sign(value):
   if value > 0:
@@ -36,6 +41,8 @@ def create_dir_vector(dir: IntVector2D):
 class Gameplay(SystemBase):
   def __init__(self, system_handler):
     super().__init__(system_handler)
+
+    #print(f"locale = {locale.getlocale()}")
 
     Terminal.set_size(120, 30)
 
@@ -70,8 +77,8 @@ class Gameplay(SystemBase):
     self.system_handler.enable_system_update(self)
 
     try:
-      map_size = IntVector2D(300, 300)
-      #map_size = IntVector2D(100, 100)
+      #map_size = IntVector2D(300, 150)
+      map_size = IntVector2D(100, 100)
       spawn_pos = map_size / 2
       maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
       self.create_keys(start_points, KEY_COUNT)
@@ -99,6 +106,7 @@ class Gameplay(SystemBase):
     for i, key_point in enumerate(key_points):
       print(f"key[{i}] = {key_point.x, key_point.y}")
       key_entity = self.gameplay_ecs.create_entity(["key", "coordinate"])
+      print(f"key_entity = {key_entity.get_id()}")
 
       coordinate_component = key_entity.get_component("coordinate")
       self.coordinate_schema.set_field(coordinate_component, "x", key_point.x)
@@ -211,6 +219,33 @@ class Gameplay(SystemBase):
         
         self.coordinate_schema.set_field(coordinate_component, "x", x)
         self.coordinate_schema.set_field(coordinate_component, "y", y)
+
+        rem = False
+        for key_entity in self.key_filter:
+          key_coordinate_component = key_entity.get_component("coordinate")
+          key_x = self.coordinate_schema.get_field(key_coordinate_component, "x")
+          key_y = self.coordinate_schema.get_field(key_coordinate_component, "y")
+
+          print(f"{x, y} -> {key_x, key_y}")
+
+          if key_x == x and key_y == y:
+            print(f"key_entity.get_id() = {key_entity.get_id()}")
+            self.gameplay_ecs.remove_entity(key_entity.get_id())
+            rem = True
+            print("~~~~~~~~")
+            collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
+            collected_keys += 1
+            self.surviver_schema.set_field(surviver_component, "collected_keys", collected_keys)
+            if collected_keys >= KEY_COUNT:
+              for exit_entity in self.exit_filter:
+                exit_component = exit_entity.get_component("exit")
+                self.exit_schema.set_field(exit_component, "state", 1)
+            break
+
+        if rem:
+          for key_entity in self.key_filter:
+            print(f"=== {key_entity.get_id()}")
+
     except Exception as ex:
       print(f"~ {ex}")
       raise
@@ -235,12 +270,12 @@ class Gameplay(SystemBase):
       size = IntVector2D(room_with, room_height)
 
       left_top_corner = pos - size / 2
-      left_top_corner.x = max(0, left_top_corner.x)
-      left_top_corner.y = max(0, left_top_corner.y)
+      left_top_corner.x = max(BORDER_SIZE, left_top_corner.x)
+      left_top_corner.y = max(BORDER_SIZE, left_top_corner.y)
 
       right_down_corner = pos + size / 2
-      right_down_corner.x = min(maze_size.x - 1, right_down_corner.x)
-      right_down_corner.y = min(maze_size.y - 1, right_down_corner.y)
+      right_down_corner.x = min(maze_size.x - 1, right_down_corner.x - BORDER_SIZE)
+      right_down_corner.y = min(maze_size.y - 1, right_down_corner.y - BORDER_SIZE)
 
       for x in range(left_top_corner.x, right_down_corner.x):
         for y in range(left_top_corner.y, right_down_corner.y):
@@ -259,14 +294,14 @@ class Gameplay(SystemBase):
       for _ in range(path_len):
         maze_data[point.x][point.y] = " "
         point += dir
-        if point.x >= maze_size.x or point.x < 0:
+        if point.x >= maze_size.x - BORDER_SIZE or point.x < BORDER_SIZE:
           dir.x = -dir.x
-          point.x = max(0, min(point.x, maze_size.x))
+          point.x = max(BORDER_SIZE, min(point.x, maze_size.x - BORDER_SIZE))
           point.x += dir.x
           break
-        if point.y >= maze_size.y or point.y < 0:
+        if point.y >= maze_size.y - BORDER_SIZE or point.y < BORDER_SIZE:
           dir.y = - dir.y
-          point.y = max(0, min(point.y, maze_size.y))
+          point.y = max(BORDER_SIZE, min(point.y, maze_size.y - BORDER_SIZE))
           point.y += dir.y
           break
 
@@ -275,17 +310,16 @@ class Gameplay(SystemBase):
 
   @staticmethod
   def create_maze(map_size: IntVector2D, min_room_size: IntVector2D, max_room_size: IntVector2D):
-    #map_data = [["#"] * map_size.y] * map_size.x
     map_data = [None] * map_size.x
     for x in range(map_size.x):
-      map_data[x] = ['#'] * map_size.y
+      map_data[x] = ["#"] * map_size.y
 
     start_pos = map_size / 2
     start_points = []
     for _ in range(30):
       Gameplay.iterate_maze(start_pos, map_size, map_data, min_room_size, max_room_size)
-      start_pos.x = random.randint(0, map_size.x - 1)
-      start_pos.y = random.randint(0, map_size.y - 1)
+      start_pos.x = random.randint(BORDER_SIZE, map_size.x - 1 - BORDER_SIZE)
+      start_pos.y = random.randint(BORDER_SIZE, map_size.y - 1 - BORDER_SIZE)
       start_points.append(IntVector2D(start_pos.x, start_pos.y))
 
     return map_data, start_points
@@ -316,8 +350,8 @@ class Gameplay(SystemBase):
       return False
 
 
-    for x in range(width):
-      for y in range(height):
+    for x in range(BORDER_SIZE, width - 1 - BORDER_SIZE):
+      for y in range(BORDER_SIZE, height - 1 - BORDER_SIZE):
         if not has_any_space(IntVector2D(x, y)):
           maze_data[x][y] = "~"
 

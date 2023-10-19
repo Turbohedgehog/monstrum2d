@@ -11,6 +11,7 @@ namespace py {
 bp::object Entity::CreateClassDeclaration() {
   return bp::class_<Entity>("Entity")
       .def("get_component", &Entity::GetComponent, bp::args(("component_index")))
+      .def("get_id", &Entity::GetId)
       //.def("get_component", &Entity::GetComponent, bp::args(("component_name")))
       //.def("get_component_by_id", &Entity::GetComponentById, bp::args(("component_id")))
   ;
@@ -34,6 +35,10 @@ bp::object Entity::GetComponent(bp::object index) const {
   component.SetComponent(component_ptr);
 
   return bp::object(component);
+}
+
+int Entity::GetId() const {
+  return static_cast<int>(entity_.lock()->GetId());
 }
 
 /*

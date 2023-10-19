@@ -14,6 +14,10 @@ Entity::Entity(std::size_t id, ECSWeakPtr ecs)
   : id_(id)
   , ecs_(ecs) {}
 
+Entity::~Entity() {
+  volatile int zzz = 0;
+}
+
 std::size_t Entity::GetId() const {
   return id_;
 }

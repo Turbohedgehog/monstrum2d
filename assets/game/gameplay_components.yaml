@@ -14,9 +14,8 @@
             name: key_down_timer
         - int:
             name: move_direction
-        - array:
-            name: keys
-            content: int
+        - int:
+            name: collected_keys
 
 - component:
     name: coordinate
@@ -35,18 +34,6 @@
             name: color_pair
         - int:
             name: type
-
-- component:
-    name: bound
-    schema:
-        - int:
-            name: width
-        - int:
-            name: height
-        - int:
-            name: x_center
-        - int:
-            name: y_center
 
 - component:
     name: key

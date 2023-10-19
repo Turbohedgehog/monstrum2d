@@ -46,6 +46,9 @@ ScreenWeakPtr Terminal::AppendScreen() {
     noecho();
     curs_set(0);
     raw();
+    
+    //system("chcp 1252");
+    //system("chcp 1251");
   }
 
   auto screen = std::make_shared<Screen>(active_screen_counter_);
