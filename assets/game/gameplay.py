@@ -23,8 +23,8 @@ MOVE_TIME = 0.05
 CORRIDOR_BRANCHE_COUNT = (1, 3)
 CORRIDOR_LENGHT = (5, 15)
 ZERO_VECTOR = IntVector2D(0, 0)
-#KEY_COUNT = 4
-KEY_COUNT = 1
+KEY_COUNT = 4
+#KEY_COUNT = 1
 
 BORDER_SIZE = 1
 
@@ -77,8 +77,8 @@ class Gameplay(SystemBase):
     self.system_handler.enable_system_update(self)
 
     try:
-      #map_size = IntVector2D(300, 150)
-      map_size = IntVector2D(100, 100)
+      map_size = IntVector2D(300, 150)
+      #map_size = IntVector2D(100, 100)
       spawn_pos = map_size / 2
       maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
       self.create_keys(start_points, KEY_COUNT)
@@ -226,13 +226,10 @@ class Gameplay(SystemBase):
           key_x = self.coordinate_schema.get_field(key_coordinate_component, "x")
           key_y = self.coordinate_schema.get_field(key_coordinate_component, "y")
 
-          print(f"{x, y} -> {key_x, key_y}")
 
           if key_x == x and key_y == y:
-            print(f"key_entity.get_id() = {key_entity.get_id()}")
             self.gameplay_ecs.remove_entity(key_entity.get_id())
             rem = True
-            print("~~~~~~~~")
             collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
             collected_keys += 1
             self.surviver_schema.set_field(surviver_component, "collected_keys", collected_keys)
@@ -241,10 +238,6 @@ class Gameplay(SystemBase):
                 exit_component = exit_entity.get_component("exit")
                 self.exit_schema.set_field(exit_component, "state", 1)
             break
-
-        if rem:
-          for key_entity in self.key_filter:
-            print(f"=== {key_entity.get_id()}")
 
     except Exception as ex:
       print(f"~ {ex}")
