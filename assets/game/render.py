@@ -7,7 +7,7 @@ from Core import IntVector2D
 MAP_COLOR_PAIR = 1
 SURVIVER_COLOR_PAIR = MAP_COLOR_PAIR + 1
 BRUTE_COLOR_PAIR = SURVIVER_COLOR_PAIR + 1
-KEYS_COLOR_PAIRS = [BRUTE_COLOR_PAIR + i for i in range(4)] #[4, 5, 6, 7,]
+KEYS_COLOR_PAIRS = [BRUTE_COLOR_PAIR + i + 1 for i in range(4)] #[4, 5, 6, 7,]
 
 class Render(SystemBase):
   def __init__(self, system_handler):
@@ -23,8 +23,9 @@ class Render(SystemBase):
     self.gameplay_ecs = self.holder.get_or_create_ecs("gameplay")
     self.gameplay_state_schema = self.holder.get_component_schema("gameplay_state")
     self.gameplay_state_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
+    self.gameplay_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
 
-    self.screen = None
+    self._screen = None
     self.system_handler.enable_system_update(self)
 
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
@@ -43,77 +44,98 @@ class Render(SystemBase):
       IntVector2D(-1, 1), IntVector2D(0, 1), IntVector2D(1, 1),
     ]
 
+  def get_gameplay(self):
+    return next((gameplay for gameplay in self.gameplay_filter), None)
 
   def update(self, delta):
     super().update(delta)
 
     self.draw()
 
-
   def draw(self):
-    if not self.check_screen():
+    gameplay = self.get_gameplay()
+    if not gameplay:
       return
     
+    screen = self.init_or_get_screen()
+    if not screen:
+      return
+    
+    gameplay_state = gameplay.get_component("gameplay_state")
+    state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+    if state == 0:
+      self.draw_intro(screen)
+    elif state == 1:
+      self.draw_gameplay(screen)
+    elif state == 2:
+      self.draw_good_ending(screen)
+    elif state == 3:
+      self.draw_bad_ending(screen)
+    else:
+      raise "Unexpected gameplay state" 
+
+
+  def draw_intro(self, screen):
+    pass
+
+  def draw_gameplay(self, screen):
     try:
       surviver = self.get_surviver()
       if surviver:
-        self.screen.clear()
+        screen.clear()
         surviver_location = self.get_surviver_location(surviver)
-        screen_width = Terminal.get_width()
-        screen_height = Terminal.get_height()
-        size = IntVector2D(screen_width, screen_height)
-        self.draw_map(surviver_location, size)
-        self.draw_surviver(size)
-        self.draw_keys(surviver_location, size)
-        self.draw_exit(surviver_location, size)
+        self.draw_map(screen, surviver_location)
+        self.draw_exit(screen, surviver_location)
+        self.draw_keys(screen, surviver_location)
+        self.draw_surviver(screen)
     except Exception as ex:
       print(ex)
       raise
 
-  def check_screen(self):
-    if self.screen is not None:
-      return True
+  def draw_good_ending(self, screen):
+    title = "Congratulations!!!"
+    message = "You have left the dungeon!"
+
+    screen.clear()
+
+  def draw_bad_ending(self, screen):
+    pass
+
+  def init_or_get_screen(self):
+    if self._screen is not None:
+      return self._screen
     
     try:
-      
-      #print(f"type(Render) = {type(Render)}")
-      #print(f"type(Color1) = {type(Color)}")
-      #print(f"Color.__class__ = {Color.__class__}")
-      #c = list(Color)
-      #print(f"colors = {c}")
-      #print(c)
-      #print(f"colors = {[e.value for e in Color]}")
       for state_entity in self.gameplay_state_filter:
         gameplay_state = state_entity.get_component("gameplay_state")
         screen_id = self.gameplay_state_schema.get_field(gameplay_state, "screen_id")
-        self.screen = Terminal.get_screen(screen_id)
+        self._screen = Terminal.get_screen(screen_id)
       
-      if not self.screen:
-        return False
+      if not self._screen:
+        return None
       
-      #self.screen.set_color_pair(1, Color.White, Color.Black)
       # Scene
-      self.screen.set_color_pair(MAP_COLOR_PAIR, 7, 0)
+      self._screen.set_color_pair(MAP_COLOR_PAIR, 7, 0)
       # Surviver
-      self.screen.set_color_pair(SURVIVER_COLOR_PAIR, 2, 0)
+      self._screen.set_color_pair(SURVIVER_COLOR_PAIR, 2, 0)
       # Brute
-      self.screen.set_color_pair(BRUTE_COLOR_PAIR, 4, 0)
+      self._screen.set_color_pair(BRUTE_COLOR_PAIR, 4, 0)
       # Key 1
-      self.screen.set_color_pair(KEYS_COLOR_PAIRS[0], 1, 0)
+      self._screen.set_color_pair(KEYS_COLOR_PAIRS[0], 1, 0)
       # Key 2
-      self.screen.set_color_pair(KEYS_COLOR_PAIRS[1], 4, 0)
+      self._screen.set_color_pair(KEYS_COLOR_PAIRS[1], 4, 0)
       # Key 3
-      self.screen.set_color_pair(KEYS_COLOR_PAIRS[2], 5, 0)
+      self._screen.set_color_pair(KEYS_COLOR_PAIRS[2], 5, 0)
       # Key 4
-      self.screen.set_color_pair(KEYS_COLOR_PAIRS[3], 6, 0)
+      self._screen.set_color_pair(KEYS_COLOR_PAIRS[3], 6, 0)
 
-      self.screen.set_clear_color(MAP_COLOR_PAIR)
-      self.screen.clear()
+      self._screen.set_clear_color(MAP_COLOR_PAIR)
+      self._screen.clear()
     except Exception as ex:
       print(ex)
       raise
     
-    return True
+    return self._screen
   
   def get_surviver(self):
     return next((surviver for surviver in self.surviver_filter), None)
@@ -124,21 +146,25 @@ class Render(SystemBase):
     y = self.coordinate_schema.get_field(coordinate_component, "y")
     return IntVector2D(x, y)
 
-  def draw_surviver(self, screen_size: IntVector2D):
-    center = screen_size / 2
-    self.screen.move_to(center.x, center.y)
-    self.screen.select_color_pair(SURVIVER_COLOR_PAIR)
-    #self.screen.print("☺")
-    self.screen.print("@")
+  def draw_surviver(self, screen):
+    center = Terminal.get_size() / 2
+    screen.move_to(center.x, center.y)
+    screen.select_color_pair(SURVIVER_COLOR_PAIR)
+    screen.print("@")
 
-  def draw_exit(self, surviver_xy: IntVector2D, screen_size: IntVector2D):
+  def draw_exit(self, screen, surviver_xy: IntVector2D):
+    map_entity = self.get_map()
+    if not map_entity:
+      return
+    screen_size = Terminal.get_size()
+    map_component = map_entity.get_component("map")
     half_size = screen_size / 2
     for exit_entity in self.exit_filter:
       exit_coordinate_component = exit_entity.get_component("coordinate")
       x = self.coordinate_schema.get_field(exit_coordinate_component, "x")
       y = self.coordinate_schema.get_field(exit_coordinate_component, "y")
-      key_pos = IntVector2D(x, y)
-      diff = key_pos - surviver_xy
+      exit_pos = IntVector2D(x, y)
+      diff = exit_pos - surviver_xy
       screen_pos = half_size + diff
       screen_pos.x = max(0, min(screen_size.x - 1, screen_pos.x))
       screen_pos.y = max(0, min(screen_size.y - 1, screen_pos.y))
@@ -146,22 +172,26 @@ class Render(SystemBase):
       exit_component = exit_entity.get_component("exit")
       is_opened = self.exit_schema.get_field(exit_component, "state") > 0
       color = SURVIVER_COLOR_PAIR if is_opened else BRUTE_COLOR_PAIR
-      self.screen.select_color_pair(color)
+      screen.select_color_pair(color)
 
       for b in self.exit_border:
         p = screen_pos + b
-        if p.x < 0 or p.x >= screen_size.x - 1:
+        if p.x < 0 or p.x >= screen_size.x:
           continue
-        if p.y < 0 or p.y >= screen_size.y - 1:
+        if p.y < 0 or p.y >= screen_size.y:
           continue
-        self.screen.move_to(p.x, p.y)
-        self.screen.print("G")
+        border_pos = exit_pos + b
+        if (self.map_schema.get_field(map_component, ["tiles", border_pos.x, border_pos.y]) & ~255) != 0:
+          continue
+        screen.move_to(p.x, p.y)
+        screen.print("G")
       if not is_opened:
-        self.screen.move_to(screen_pos.x, screen_pos.y)
-        self.screen.print("X")
+        screen.move_to(screen_pos.x, screen_pos.y)
+        screen.print("X")
 
 
-  def draw_keys(self, surviver_xy: IntVector2D, screen_size: IntVector2D):
+  def draw_keys(self, screen, surviver_xy: IntVector2D):
+    screen_size = Terminal.get_size()
     half_size = screen_size / 2
     for key_entity in self.key_filter:
       coordinate_component = key_entity.get_component("coordinate")
@@ -179,18 +209,20 @@ class Render(SystemBase):
       screen_pos = half_size + diff
       screen_pos.x = max(0, min(screen_size.x - 1, screen_pos.x))
       screen_pos.y = max(0, min(screen_size.y - 1, screen_pos.y))
-      self.screen.move_to(screen_pos.x, screen_pos.y)
-      self.screen.select_color_pair(KEYS_COLOR_PAIRS[id])
-      self.screen.print("K")
-      #self.screen.print("¤")
+      screen.move_to(screen_pos.x, screen_pos.y)
+      screen.select_color_pair(KEYS_COLOR_PAIRS[id])
+      screen.print("K")
 
+  def get_map(self):
+    return next((m for m in self.map_filter), None)
 
-  def draw_map(self, surviver_xy: IntVector2D, screen_size: IntVector2D):
+  def draw_map(self, screen, surviver_xy: IntVector2D):
     # Draw only first map
-    map_entity = next((m for m in self.map_filter), None)
+    map_entity = self.get_map()
     if map_entity is None:
       return
     
+    screen_size = Terminal.get_size()
     screen_width = screen_size.x
     screen_height = screen_size.y
     screen_size_half = screen_size / 2
@@ -207,7 +239,7 @@ class Render(SystemBase):
     screen_width_to = screen_width_from + screen_width
     #screen_height_to = screen_height_from + screen_height
 
-    self.screen.select_color_pair(MAP_COLOR_PAIR)
+    screen.select_color_pair(MAP_COLOR_PAIR)
     for y in range(screen_height):
       map_y = screen_height_from + y
       if map_y < 0 or map_y >= map_height:
@@ -219,5 +251,5 @@ class Render(SystemBase):
             s += " "
           else:
             s += chr(self.map_schema.get_field(map_component, ["tiles", x, map_y]) & 255)
-      self.screen.move_to(0, y)
-      self.screen.print(s)
+      screen.move_to(0, y)
+      screen.print(s)

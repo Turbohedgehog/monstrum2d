@@ -62,6 +62,8 @@ class Gameplay(SystemBase):
     gameplay_state_entity = self.gameplay_ecs.create_entity(["gameplay_state"])
     gameplay_state = gameplay_state_entity.get_component("gameplay_state")
     self.gameplay_state_schema.set_field(gameplay_state, "screen_id", screen_id)
+    self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
+    self.gameplay_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
 
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
     #self.bound_schema = self.holder.get_component_schema("bound")
@@ -77,8 +79,8 @@ class Gameplay(SystemBase):
     self.system_handler.enable_system_update(self)
 
     try:
-      map_size = IntVector2D(300, 150)
-      #map_size = IntVector2D(100, 100)
+      #map_size = IntVector2D(300, 150)
+      map_size = IntVector2D(100, 100)
       spawn_pos = map_size / 2
       maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
       self.create_keys(start_points, KEY_COUNT)
@@ -134,7 +136,13 @@ class Gameplay(SystemBase):
       if key_pressed == 27:
         self.holder.shutdown()
 
-    self.update_player_movement(delta, key_pressed)
+    gameplay_state_entity = next((gameplay for gameplay in self.gameplay_filter), None)
+    gameplay_state = gameplay_state_entity.get_component("gameplay_state")
+    state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+    if state == 0:
+      self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
+    elif state == 1:
+      self.update_player_movement(delta, key_pressed)
 
   def update_player_movement(self, delta, key_pressed):
     # 452 - left
@@ -219,30 +227,49 @@ class Gameplay(SystemBase):
         
         self.coordinate_schema.set_field(coordinate_component, "x", x)
         self.coordinate_schema.set_field(coordinate_component, "y", y)
+        
+        surviver_pos = IntVector2D(x, y)
 
-        rem = False
-        for key_entity in self.key_filter:
-          key_coordinate_component = key_entity.get_component("coordinate")
-          key_x = self.coordinate_schema.get_field(key_coordinate_component, "x")
-          key_y = self.coordinate_schema.get_field(key_coordinate_component, "y")
-
-
-          if key_x == x and key_y == y:
-            self.gameplay_ecs.remove_entity(key_entity.get_id())
-            rem = True
-            collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
-            collected_keys += 1
-            self.surviver_schema.set_field(surviver_component, "collected_keys", collected_keys)
-            if collected_keys >= KEY_COUNT:
-              for exit_entity in self.exit_filter:
-                exit_component = exit_entity.get_component("exit")
-                self.exit_schema.set_field(exit_component, "state", 1)
-            break
+        self.check_key_pickup(surviver_pos, surviver_component)
+        self.check_exit(surviver_pos, surviver_component)
 
     except Exception as ex:
       print(f"~ {ex}")
       raise
   
+  def check_key_pickup(self, surviver_pos: IntVector2D, surviver_component):
+    for key_entity in self.key_filter:
+      key_coordinate_component = key_entity.get_component("coordinate")
+      key_x = self.coordinate_schema.get_field(key_coordinate_component, "x")
+      key_y = self.coordinate_schema.get_field(key_coordinate_component, "y")
+
+      if key_x == surviver_pos.x and key_y == surviver_pos.y:
+        self.gameplay_ecs.remove_entity(key_entity.get_id())
+        collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
+        collected_keys += 1
+        self.surviver_schema.set_field(surviver_component, "collected_keys", collected_keys)
+        if collected_keys >= KEY_COUNT:
+          for exit_entity in self.exit_filter:
+            exit_component = exit_entity.get_component("exit")
+            self.exit_schema.set_field(exit_component, "state", 1)
+        break
+
+  def check_exit(self, surviver_pos: IntVector2D, surviver_component):
+    collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
+    if collected_keys < KEY_COUNT:
+      return
+    
+    for exit_entity in self.exit_filter:
+      exit_coordinate = exit_entity.get_component("coordinate")
+      exit_x = self.coordinate_schema.get_field(exit_coordinate, "x")
+      exit_y = self.coordinate_schema.get_field(exit_coordinate, "y")
+      if surviver_pos.x == exit_x and surviver_pos.y == exit_y:
+        for gameplay_state_entity in self.gameplay_filter:
+          gameplay_state = gameplay_state_entity.get_component("gameplay_state")
+          # Good ending
+          self.gameplay_state_schema.set_field(gameplay_state, "state", 2)
+
+
   @staticmethod
   def iterate_maze(start_pos: IntVector2D, maze_size: IntVector2D, maze_data, min_room_size: IntVector2D, max_room_size: IntVector2D):
     max_path_len = 20
@@ -347,14 +374,6 @@ class Gameplay(SystemBase):
       for y in range(BORDER_SIZE, height - 1 - BORDER_SIZE):
         if not has_any_space(IntVector2D(x, y)):
           maze_data[x][y] = "~"
-
-    '''
-    for x in range(width):
-      for y in range(height):
-        if maze_data[x][y] == "~":
-          maze_data[x][y] = " "
-    '''
-
 
   def create_map(self, maze_data):
     width = len(maze_data)

@@ -2,6 +2,10 @@
     name: gameplay_state
     schema:
         - int:
+            # 0 - intro
+            # 1 - gameplay
+            # 2 - good ending
+            # 3 - bad ending
             name: state
             default: 0
         - int:

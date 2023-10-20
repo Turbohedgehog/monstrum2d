@@ -13,6 +13,7 @@ bp::object Terminal::CreateClassDeclaration() {
       .def("set_size", &Terminal::SetSize, bp::args(("width"), ("height"))).staticmethod("set_size")
       .def("get_width", &Terminal::GetWidth).staticmethod("get_width")
       .def("get_height", &Terminal::GetHeight).staticmethod("get_height")
+      .def("get_size", &Terminal::GetSize).staticmethod("get_size")
   ;
 
   return class_decl;
@@ -52,6 +53,12 @@ int Terminal::GetWidth() {
 
 int Terminal::GetHeight() {
   return hi::Terminal::GetInstance().GetHeight();
+}
+
+IntVector2D Terminal::GetSize() {
+  auto& terminal = hi::Terminal::GetInstance();
+
+  return IntVector2D(terminal.GetWidth(), terminal.GetHeight());
 }
 
 }  // namespace py

@@ -3,6 +3,7 @@
 #include "py/py.h"
 
 #include "py/py_screen.h"
+#include "py/py_vector2d.h"
 
 namespace m2d {
 
@@ -16,6 +17,7 @@ class Terminal {
   static void SetSize(int width, int height);
   static int GetWidth();
   static int GetHeight();
+  static IntVector2D GetSize();
 
 };
 
