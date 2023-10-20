@@ -14,6 +14,7 @@ namespace ecs {
 class Entity : public std::enable_shared_from_this<Entity> {
  public:
   Entity(std::size_t id, ECSWeakPtr ecs);
+  ~Entity();
 
   std::size_t GetId() const;
   ECSWeakPtr GetECS() const;

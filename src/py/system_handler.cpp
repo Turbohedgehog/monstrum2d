@@ -19,7 +19,7 @@ SystemHandler::~SystemHandler() {
 
 void SystemHandler::Update(float delta) {
   for (auto& [object, update_func] : systems_to_update_) {
-    //std::string class_name = bp::extract<std::string>(object.attr("__class__").attr("__name__"));
+    //std::string class_name = bp::extract<std::string>(bp::object(object).attr("__class__").attr("__name__"));
     update_func(delta);
   }
 }
@@ -73,12 +73,14 @@ void SystemHandler::OnEnableUpdatePropertyChanged(bp::object system_object) {
 
 void SystemHandler::EnableSystemUpdate(bp::object system_object) {
   std::string class_name = bp::extract<std::string>(system_object.attr("__class__").attr("__name__"));
-  systems_to_update_.insert({system_object.ptr(), system_object.attr("update")});
+  //systems_to_update_.insert({system_object.ptr(), system_object.attr("update")});
+  systems_to_update_.insert({class_name, system_object.attr("update")});
 }
 
 void SystemHandler::DisableSystemUpdate(bp::object system_object) {
-  //std::string class_name = bp::extract<std::string>(system_object.attr("__class__").attr("__name__"));
-  auto it = systems_to_update_.find(system_object.ptr());
+  std::string class_name = bp::extract<std::string>(system_object.attr("__class__").attr("__name__"));
+  //auto it = systems_to_update_.find(system_object.ptr());
+  auto it = systems_to_update_.find(class_name);
   if (it != systems_to_update_.end()) {
     systems_to_update_.erase(it);
   }

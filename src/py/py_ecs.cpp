@@ -35,6 +35,7 @@ void ECS::SetECS(ecs::ECSWeakPtr ecs) {
 bp::object ECS::CreateClassDeclaration() {
   return bp::class_<ECS>("ECS")
       .def("create_entity", &ECS::CreateEntity, bp::args(("component_names")))
+      .def("remove_entity", &ECS::RemoveEntity, bp::args(("entity_id")))
       .def("get_or_create_filter", &ECS::GetOrCreateFilter, bp::args(("component_names")))
   ;
 }
@@ -59,6 +60,14 @@ bp::object ECS::GetOrCreateFilter(bp::list component_names) {
   filter.SetFilter(filter_ptr);
 
   return bp::object(filter);
+}
+
+void ECS::RemoveEntity(int entity_id) {
+  if (entity_id < 0) {
+    return;
+  }
+
+  ecs_.lock()->RemoveEntity(static_cast<std::size_t>(entity_id));
 }
 
 }  // namespace py

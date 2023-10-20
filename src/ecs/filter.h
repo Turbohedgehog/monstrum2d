@@ -15,6 +15,7 @@ class Filter {
   Filter(ECSWeakPtr ecs, const ComponentBitmask& filter_bitmask);
   bool IsValid() const;
   void ProcessEntity(EntityWeakPtr entity);
+  void RemoveEntity(EntityWeakPtr entity);
   EntityMap& GetEnities();
 
  private:

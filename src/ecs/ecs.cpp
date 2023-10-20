@@ -18,7 +18,6 @@ HolderWeakPtr ECS::GetHolder() const {
 
 EntityWeakPtr ECS::CreateEnity(const std::vector<StringIndex>& components) {
   auto entity = pool_->AllocateEntity(entity_counter_, shared_from_this());
-  ++entity_counter_;
 
   entity->AddComponents(components);
   enities_[entity_counter_] = entity;
@@ -26,6 +25,8 @@ EntityWeakPtr ECS::CreateEnity(const std::vector<StringIndex>& components) {
   for (auto& [_, filter] : filters_) {
     filter->ProcessEntity(entity);
   }
+
+  ++entity_counter_;
 
   return entity;
 }
@@ -63,6 +64,16 @@ FilterWeakPtr ECS::GetOrCreateFilter(const std::vector<StringIndex>& components)
   }
 
   return filter;
+}
+
+void ECS::RemoveEntity(std::size_t enity_id) {
+  auto it = enities_.find(enity_id);
+
+  if (it == enities_.end()) {
+    return;
+  }
+
+  enities_.erase(it);
 }
 
 }  // namespace ecs
