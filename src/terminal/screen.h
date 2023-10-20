@@ -37,7 +37,7 @@ class Screen {
   KeyCode key_pressed_;
   bool is_active_ = false;
 
-  std::array<std::tuple<short, short>, 8> color_scheme_;
+  std::array<std::tuple<short, short>, 256> color_scheme_;
   short clear_screen_pair_ = 0;
 };
 

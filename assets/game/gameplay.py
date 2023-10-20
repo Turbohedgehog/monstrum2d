@@ -62,7 +62,7 @@ class Gameplay(SystemBase):
     gameplay_state_entity = self.gameplay_ecs.create_entity(["gameplay_state"])
     gameplay_state = gameplay_state_entity.get_component("gameplay_state")
     self.gameplay_state_schema.set_field(gameplay_state, "screen_id", screen_id)
-    self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
+    #self.gameplay_state_schema.set_field(gameplay_state, "state", 0)
     self.gameplay_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
 
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
@@ -132,17 +132,17 @@ class Gameplay(SystemBase):
   def update_input(self, delta):
     key_pressed = self.gameplay_screen.get_key_pressed()
     if key_pressed is not None:
-      #if key_pressed == 27 or chr(key_pressed) == 'q':
       if key_pressed == 27:
         self.holder.shutdown()
+        return
 
-    gameplay_state_entity = next((gameplay for gameplay in self.gameplay_filter), None)
-    gameplay_state = gameplay_state_entity.get_component("gameplay_state")
-    state = self.gameplay_state_schema.get_field(gameplay_state, "state")
-    if state == 0:
-      self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
-    elif state == 1:
-      self.update_player_movement(delta, key_pressed)
+      gameplay_state_entity = next((gameplay for gameplay in self.gameplay_filter), None)
+      gameplay_state = gameplay_state_entity.get_component("gameplay_state")
+      state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+      if state == 0:
+        self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
+      elif state == 1:
+        self.update_player_movement(delta, key_pressed)
 
   def update_player_movement(self, delta, key_pressed):
     # 452 - left

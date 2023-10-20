@@ -5,8 +5,10 @@ from Core import IntVector2D
 
 
 MAP_COLOR_PAIR = 1
-SURVIVER_COLOR_PAIR = MAP_COLOR_PAIR + 1
+BAD_ENDING_COLOR_PAIR = MAP_COLOR_PAIR + 1
+SURVIVER_COLOR_PAIR = BAD_ENDING_COLOR_PAIR + 1
 BRUTE_COLOR_PAIR = SURVIVER_COLOR_PAIR + 1
+
 KEYS_COLOR_PAIRS = [BRUTE_COLOR_PAIR + i + 1 for i in range(4)] #[4, 5, 6, 7,]
 
 class Render(SystemBase):
@@ -61,22 +63,36 @@ class Render(SystemBase):
     if not screen:
       return
     
-    gameplay_state = gameplay.get_component("gameplay_state")
-    state = self.gameplay_state_schema.get_field(gameplay_state, "state")
-    if state == 0:
-      self.draw_intro(screen)
-    elif state == 1:
-      self.draw_gameplay(screen)
-    elif state == 2:
-      self.draw_good_ending(screen)
-    elif state == 3:
-      self.draw_bad_ending(screen)
-    else:
-      raise "Unexpected gameplay state" 
+    try:
+      gameplay_state = gameplay.get_component("gameplay_state")
+      state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+      if state == 0:
+        self.draw_intro(screen)
+      elif state == 1:
+        self.draw_gameplay(screen)
+      elif state == 2:
+        self.draw_good_ending(screen)
+      elif state == 3:
+        self.draw_bad_ending(screen)
+      else:
+        raise "Unexpected gameplay state" 
+    except Exception as ex:
+      print(ex)
+      raise
 
 
   def draw_intro(self, screen):
-    pass
+    title = "Intro"
+    #message = "You have left the dungeon!"
+    center = Terminal.get_size() / 2
+    
+    screen.clear()
+
+    screen.move_to(int(center.x - len(title) / 2), center.y - 1)
+    screen.print(title)
+
+    #screen.move_to(int(center.x - len(message) / 2), center.y + 1)
+    #screen.print(message)
 
   def draw_gameplay(self, screen):
     try:
@@ -95,11 +111,33 @@ class Render(SystemBase):
   def draw_good_ending(self, screen):
     title = "Congratulations!!!"
     message = "You have left the dungeon!"
-
+    center = Terminal.get_size() / 2
+    
     screen.clear()
 
+    screen.move_to(int(center.x - len(title) / 2), center.y - 1)
+    screen.print(title)
+
+    screen.move_to(int(center.x - len(message) / 2), center.y + 1)
+    screen.print(message)
+
   def draw_bad_ending(self, screen):
-    pass
+    message = "    POTRA4ENO!!!    "
+    message_len = len(message)
+    border = " " * message_len
+    center = Terminal.get_size() / 2
+
+    screen.set_clear_color(BAD_ENDING_COLOR_PAIR)
+    screen.select_color_pair(BRUTE_COLOR_PAIR)
+    screen.clear()
+
+    x = int(center.x - message_len / 2)
+    screen.move_to(x, center.y - 1)
+    screen.print(border)
+    screen.move_to(x, center.y)
+    screen.print(message)
+    screen.move_to(x, center.y + 1)
+    screen.print(border)
 
   def init_or_get_screen(self):
     if self._screen is not None:
@@ -120,6 +158,8 @@ class Render(SystemBase):
       self._screen.set_color_pair(SURVIVER_COLOR_PAIR, 2, 0)
       # Brute
       self._screen.set_color_pair(BRUTE_COLOR_PAIR, 4, 0)
+      # Bad ending
+      self._screen.set_color_pair(BAD_ENDING_COLOR_PAIR, 0, 4)
       # Key 1
       self._screen.set_color_pair(KEYS_COLOR_PAIRS[0], 1, 0)
       # Key 2
