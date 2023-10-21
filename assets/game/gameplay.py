@@ -66,9 +66,12 @@ class Gameplay(SystemBase):
     self.gameplay_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
 
     self.coordinate_schema = self.holder.get_component_schema("coordinate")
-    #self.bound_schema = self.holder.get_component_schema("bound")
+
     self.surviver_schema = self.holder.get_component_schema("surviver")
     self.surviver_filter = self.gameplay_ecs.get_or_create_filter(["surviver", "coordinate"])
+
+    self.brute_schema = self.holder.get_component_schema("brute")
+    self.brute_filter = self.gameplay_ecs.get_or_create_filter(["brute", "coordinate"])
 
     self.key_schema = self.holder.get_component_schema("key")
     self.key_filter = self.gameplay_ecs.get_or_create_filter(["key", "coordinate"])
@@ -79,8 +82,8 @@ class Gameplay(SystemBase):
     self.system_handler.enable_system_update(self)
 
     try:
-      #map_size = IntVector2D(300, 150)
-      map_size = IntVector2D(100, 100)
+      map_size = IntVector2D(300, 150)
+      #map_size = IntVector2D(100, 100)
       spawn_pos = map_size / 2
       maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
       self.create_keys(start_points, KEY_COUNT)
@@ -252,6 +255,8 @@ class Gameplay(SystemBase):
           for exit_entity in self.exit_filter:
             exit_component = exit_entity.get_component("exit")
             self.exit_schema.set_field(exit_component, "state", 1)
+
+        self.upgrade_brute(surviver_component)
         break
 
   def check_exit(self, surviver_pos: IntVector2D, surviver_component):
@@ -268,7 +273,19 @@ class Gameplay(SystemBase):
           gameplay_state = gameplay_state_entity.get_component("gameplay_state")
           # Good ending
           self.gameplay_state_schema.set_field(gameplay_state, "state", 2)
+    
+  def upgrade_brute(self, surviver_component):
+    collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
+    if collected_keys == 1:
+      self.spawn_brute()
+    
+    for brute in self.brute_filter:
+      brute_component = brute.get_component("brute")
+      brute_component.set_field("state", collected_keys)
 
+  def spawn_brute(self):
+    pass
+    
 
   @staticmethod
   def iterate_maze(start_pos: IntVector2D, maze_size: IntVector2D, maze_data, min_room_size: IntVector2D, max_room_size: IntVector2D):
@@ -300,7 +317,6 @@ class Gameplay(SystemBase):
       for x in range(left_top_corner.x, right_down_corner.x):
         for y in range(left_top_corner.y, right_down_corner.y):
           maze_data[x][y] = " "
-      
 
     for _ in range(turtle_moves):
       new_direction_idx = random.randint(0, 3)

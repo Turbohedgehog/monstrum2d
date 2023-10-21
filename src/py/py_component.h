@@ -14,8 +14,12 @@ class Component {
 
   void SetComponent(ecs::ComponentWeakPtr component);
   ecs::ComponentWeakPtr GetComponent() const;
+  void SetField(bp::object field_path, bp::object value);
+  bp::object GetField(bp::object field_path);
 
  private:
+  ecs::ComponentDataPtr AccessField(bp::object field_path) const;
+
   ecs::ComponentWeakPtr component_;
 };
 

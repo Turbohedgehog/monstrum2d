@@ -22,6 +22,12 @@
             name: collected_keys
 
 - component:
+    name: brute
+    schema:
+        - int:
+            name: state
+
+- component:
     name: coordinate
     schema:
         - int:

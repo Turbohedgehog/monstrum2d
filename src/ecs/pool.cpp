@@ -15,8 +15,9 @@ EntityPtr Pool::AllocateEntity(std::size_t id, ECSWeakPtr ecs) {
 ComponentPtr Pool::AllocateComponent(
     std::size_t type_id,
     std::size_t enity_id,
+    ComponentSchemaWeakPtr schema,
     ComponentDataPtr data) {
-  return std::make_shared<Component>(type_id, enity_id, data);
+  return std::make_shared<Component>(type_id, enity_id, schema, data);
 }
 
 FilterPtr Pool::AllocateFilter(ECSWeakPtr ecs, const ComponentBitmask& component_bitmask) {
