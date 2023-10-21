@@ -141,20 +141,25 @@ class Gameplay(SystemBase):
     self.coordinate_schema.set_field(coordinate_component, "y", spawn_pos.y)
 
   def update_input(self, delta):
+    gameplay_state_entity = next((gameplay for gameplay in self.gameplay_filter), None)
+    gameplay_state = gameplay_state_entity.get_component("gameplay_state")
+    state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+    if state == 1:
+      try:
+        self.update_brute(delta)
+      except Exception as ex:
+        print(ex)
+        raise
     key_pressed = self.gameplay_screen.get_key_pressed()
     if key_pressed is not None:
       if key_pressed == 27:
         self.holder.shutdown()
         return
-
-      gameplay_state_entity = next((gameplay for gameplay in self.gameplay_filter), None)
-      gameplay_state = gameplay_state_entity.get_component("gameplay_state")
-      state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+      
       if state == 0:
         self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
       elif state == 1:
         self.update_player_movement(delta, key_pressed)
-        self.update_brute(delta)
 
   def update_player_movement(self, delta, key_pressed):
     # 452 - left
@@ -300,20 +305,84 @@ class Gameplay(SystemBase):
     map_entity = next((m for m in self.map_filter), None) 
     if map_entity is None:
       return
+    
+    map_component = map_entity.get_component("map")
 
     for brute in self.brute_filter:
-      brute_component = brute.get_component("brute")
-      state = brute_component.get_field("state")
-      move_timer = brute_component.get_field("move_timer")
-      move_timer += delta_time
-      time_to_move = BRUTE_MOVE_TIME[state]
-      if move_timer >= time_to_move:
-        move_timer -= time_to_move
+      self.move_brute(brute, map_component, delta_time)
 
-      brute_component.set_field("move_timer", move_timer)
+  def move_brute(self, brute, map_component, delta_time):
+    brute_component = brute.get_component("brute")
+    state = brute_component.get_field("state")
+    coordinate = brute.get_component("coordinate")
+    x = coordinate.get_field("x")
+    y = coordinate.get_field("y")
+    next_x = x
+    next_y = y
+
+    move_timer = brute_component.get_field("move_timer")
+    move_timer += delta_time
+    time_to_move = BRUTE_MOVE_TIME[state]
+    if move_timer >= time_to_move:
+      move_timer -= time_to_move
+      move_dir_x = brute_component.get_field("move_dir_x")
+      move_dir_y = brute_component.get_field("move_dir_y")
+      if move_dir_x != 0:
+        sign_x = sign(move_dir_x)
+        next_x += sign_x
+        move_dir_x -= sign_x
+
+      if move_dir_y != 0:
+        sign_y = sign(move_dir_y)
+        next_y += sign_y
+        move_dir_y -= sign_y
+
+      tile = map_component.get_field(["tiles", x, y])
+
+      width = map_component.get_field("width")
+      height = map_component.get_field("height")
+      
+      if next_x < 0 or next_x >= width or next_y < 0 or next_y >= height:
+        move_dir_x = 0
+        move_dir_y = 0
+      elif tile & TileType.WALL.value == 0:
+        coordinate.set_field("x", next_x)
+        coordinate.set_field("y", next_y)
+      elif state < 3:
+        move_dir_x = 0
+        move_dir_y = 0
+      else:
+        coordinate.set_field("x", next_x)
+        coordinate.set_field("y", next_y)
+        map_component.set_field(["tiles", next_x, next_y], TileType.GROUND.value | ord(" "))
+      
+      if move_dir_x == 0 and move_dir_y == 0:
+        if random.randint(0, 1) == 0:
+          move_dir_x = random.randint(-5, 5)
+        else:
+          move_dir_y = random.randint(-5, 5)
+        '''
+        if state == 1:
+          if random.randint(0, 1) == 0:
+            move_dir_x = random.randint(-5, 5)
+          else:
+            move_dir_y = random.randint(-5, 5)
+        elif state == 2:
+          pass
+        elif state == 3:
+          pass
+        elif state == 4:
+          pass
+        else:
+          raise "Unknown brute state"
+        '''
+        brute_component.set_field("move_dir_x", move_dir_x)
+        brute_component.set_field("move_dir_y", move_dir_y)
+
+    brute_component.set_field("move_timer", move_timer)
+
 
   def spawn_brute(self):
-    print("~~~~~ spawn_brute")
     surviver_entity = next((s for s in self.surviver_filter), None) 
     if surviver_entity is None:
       return

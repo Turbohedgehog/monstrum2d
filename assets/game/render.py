@@ -42,6 +42,8 @@ class Render(SystemBase):
 
     self.brute_filter = self.gameplay_ecs.get_or_create_filter(["brute", "coordinate"])
 
+    self.time = 0
+
     self.exit_border = [
       IntVector2D(-1, -1), IntVector2D(0, -1), IntVector2D(1, -1),
       IntVector2D(-1, 0), IntVector2D(1, 0),
@@ -53,6 +55,8 @@ class Render(SystemBase):
 
   def update(self, delta):
     super().update(delta)
+
+    self.time += delta
 
     self.draw()
 
@@ -77,7 +81,8 @@ class Render(SystemBase):
       elif state == 3:
         self.draw_bad_ending(screen)
       else:
-        raise "Unexpected gameplay state" 
+        raise "Unexpected gameplay state"
+      self.draw_time(screen)
     except Exception as ex:
       print(ex)
       raise
@@ -272,6 +277,10 @@ class Render(SystemBase):
       screen.move_to(screen_pos.x, screen_pos.y)
       screen.select_color_pair(KEYS_COLOR_PAIRS[id])
       screen.print("K")
+
+  def draw_time(self, screen):
+    screen.move_to(0, 0)
+    screen.print(f"   {self.time}   ")
 
   def get_map(self):
     return next((m for m in self.map_filter), None)
