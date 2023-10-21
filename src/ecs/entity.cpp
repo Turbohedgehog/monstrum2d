@@ -50,7 +50,7 @@ void Entity::AddComponents(const std::vector<StringIndex>& components) {
     auto s_id = schema_id.value();
     auto schema = holder->GetComponentSchema(s_id);
     auto component_data = schema.lock()->CreateComponentData(ecs_);
-    components_[s_id] = pool->AllocateComponent(s_id, id_, component_data);
+    components_[s_id] = pool->AllocateComponent(s_id, id_, schema, component_data);
     component_bitmask_[s_id] = 1;
   }
 }

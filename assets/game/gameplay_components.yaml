@@ -22,6 +22,20 @@
             name: collected_keys
 
 - component:
+    name: brute
+    schema:
+        - int:
+            name: brute_state
+        - double:
+            name: move_timer
+        - int:
+            name: is_hunting
+        - int:
+            name: move_dir_x
+        - int:
+            name: move_dir_y
+
+- component:
     name: coordinate
     schema:
         - int:
