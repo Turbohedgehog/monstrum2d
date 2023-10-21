@@ -26,7 +26,12 @@ ZERO_VECTOR = IntVector2D(0, 0)
 KEY_COUNT = 4
 #KEY_COUNT = 1
 
+BRUTE_MOVE_TIME = [1, 0.8, 0.5, 0.3]
+
 BORDER_SIZE = 1
+
+#MAP_SIZE = IntVector2D(300, 150)
+MAP_SIZE = IntVector2D(100, 100)
 
 def sign(value):
   if value > 0:
@@ -82,8 +87,7 @@ class Gameplay(SystemBase):
     self.system_handler.enable_system_update(self)
 
     try:
-      map_size = IntVector2D(300, 150)
-      #map_size = IntVector2D(100, 100)
+      map_size = MAP_SIZE
       spawn_pos = map_size / 2
       maze, start_points = Gameplay.create_maze(map_size, IntVector2D(8, 4), IntVector2D(20, 10))
       self.create_keys(start_points, KEY_COUNT)
@@ -100,7 +104,11 @@ class Gameplay(SystemBase):
   def update(self, delta):
     super().update(delta)
 
-    self.update_input(delta)
+    try:
+      self.update_input(delta)
+    except Exception as ex:
+      print(ex)
+      raise
 
   def create_keys(self, start_points, count):
     count = min(count, len(start_points))
@@ -146,6 +154,7 @@ class Gameplay(SystemBase):
         self.gameplay_state_schema.set_field(gameplay_state, "state", 1)
       elif state == 1:
         self.update_player_movement(delta, key_pressed)
+        self.update_brute(delta)
 
   def update_player_movement(self, delta, key_pressed):
     # 452 - left
@@ -277,14 +286,75 @@ class Gameplay(SystemBase):
   def upgrade_brute(self, surviver_component):
     collected_keys = self.surviver_schema.get_field(surviver_component, "collected_keys")
     if collected_keys == 1:
-      self.spawn_brute()
+      try:
+        self.spawn_brute()
+      except Exception as ex:
+        print(ex)
+        raise
     
     for brute in self.brute_filter:
       brute_component = brute.get_component("brute")
       brute_component.set_field("state", collected_keys)
 
+  def update_brute(self, delta_time):
+    map_entity = next((m for m in self.map_filter), None) 
+    if map_entity is None:
+      return
+
+    for brute in self.brute_filter:
+      brute_component = brute.get_component("brute")
+      state = brute_component.get_field("state")
+      move_timer = brute_component.get_field("move_timer")
+      move_timer += delta_time
+      time_to_move = BRUTE_MOVE_TIME[state]
+      if move_timer >= time_to_move:
+        move_timer -= time_to_move
+
+      brute_component.set_field("move_timer", move_timer)
+
   def spawn_brute(self):
-    pass
+    print("~~~~~ spawn_brute")
+    surviver_entity = next((s for s in self.surviver_filter), None) 
+    if surviver_entity is None:
+      return
+    
+    surviver_coordinate = surviver_entity.get_component("coordinate")
+    s_x = surviver_coordinate.get_field("x")
+    s_y = surviver_coordinate.get_field("y")
+    surviver_pos = IntVector2D(s_x, s_y)
+    
+    #squared_length
+    coordinates = []
+    for key_entity in self.key_filter:
+      key_coordinate = key_entity.get_component("coordinate")
+      x = key_coordinate.get_field("x")
+      y = key_coordinate.get_field("y")
+      coordinates.append(IntVector2D(x, y))
+
+    for exit_entity in self.exit_filter:
+      exit_coordinate = exit_entity.get_component("coordinate")
+      x = exit_coordinate.get_field("x")
+      y = exit_coordinate.get_field("y")
+      coordinates.append(IntVector2D(x, y))
+
+    max_distance = -1
+    far_pos = None
+
+    for coordinate in coordinates:
+      c = (surviver_pos - coordinate).squared_length()
+      if c > max_distance:
+        max_distance = c
+        far_pos = coordinate
+
+    if far_pos is None:
+      raise "Cannot spawn Brute! Location not found"
+
+    brute_entity = self.gameplay_ecs.create_entity(["brute", "coordinate"])
+    brute_component = brute_entity.get_component("brute")
+    brute_component.set_field("state", 1)
+    brute_coordinate_component = brute_entity.get_component("coordinate")
+    brute_coordinate_component.set_field("x", far_pos.x)
+    brute_coordinate_component.set_field("y", far_pos.y)
     
 
   @staticmethod

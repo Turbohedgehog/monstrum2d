@@ -26,6 +26,8 @@
     schema:
         - int:
             name: state
+        - double:
+            name: move_timer
 
 - component:
     name: coordinate

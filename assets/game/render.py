@@ -40,6 +40,8 @@ class Render(SystemBase):
     self.exit_schema = self.holder.get_component_schema("exit")
     self.exit_filter = self.gameplay_ecs.get_or_create_filter(["exit", "coordinate"])
 
+    self.brute_filter = self.gameplay_ecs.get_or_create_filter(["brute", "coordinate"])
+
     self.exit_border = [
       IntVector2D(-1, -1), IntVector2D(0, -1), IntVector2D(1, -1),
       IntVector2D(-1, 0), IntVector2D(1, 0),
@@ -104,6 +106,7 @@ class Render(SystemBase):
         self.draw_exit(screen, surviver_location)
         self.draw_keys(screen, surviver_location)
         self.draw_surviver(screen)
+        self.draw_brute(screen, surviver_location)
     except Exception as ex:
       print(ex)
       raise
@@ -191,6 +194,23 @@ class Render(SystemBase):
     screen.move_to(center.x, center.y)
     screen.select_color_pair(SURVIVER_COLOR_PAIR)
     screen.print("@")
+
+  def draw_brute(self, screen, surviver_xy: IntVector2D):
+    screen_size = Terminal.get_size()
+    half_size = screen_size / 2
+    for brute_entity in self.brute_filter:
+      coordinate_component = brute_entity.get_component("coordinate")
+      x = coordinate_component.get_field("x")
+      y = coordinate_component.get_field("y")
+      brute_coordinate = IntVector2D(x, y)
+      diff = brute_coordinate - surviver_xy
+      if abs(diff.x) >= half_size.x or abs(diff.y) >= half_size.y:
+        continue
+    
+      screen_pos = half_size + diff
+      screen.move_to(screen_pos.x, screen_pos.y)
+      screen.select_color_pair(BRUTE_COLOR_PAIR)
+      screen.print("M")
 
   def draw_exit(self, screen, surviver_xy: IntVector2D):
     map_entity = self.get_map()
