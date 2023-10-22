@@ -1,7 +1,0 @@
-- component:
-    name: main_menu
-    schema:
-    - int:
-        name: current_menu_idx
-    - int:
-        name: current_menu_item

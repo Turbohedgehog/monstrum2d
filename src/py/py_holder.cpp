@@ -10,7 +10,7 @@ bp::object Holder::CreateClassDeclaration() {
   return bp::class_<Holder>("Holder")
       .def("get_or_create_ecs", &Holder::GetOrCreateECS, bp::args(("ecs_name")))
       .def("shutdown", &Holder::Shutdown)
-      .def("get_component_schema", &Holder::GetComponentSchema, bp::args(("schema_name")))
+      //.def("get_component_schema", &Holder::GetComponentSchema, bp::args(("schema_name")))
   ;
 }
 
@@ -30,6 +30,7 @@ ECS Holder::GetOrCreateECS(const std::string& ecs_name) {
   return ecs;
 }
 
+#if 0
 //boost::optional<int> Holder::GetComponentSchemaId(const std::string& schema_name) {
 bp::object Holder::GetComponentSchemaId(const std::string& schema_name) {
   auto id = holder_.lock()->GetComponentSchemaIdByName(schema_name);
@@ -61,6 +62,7 @@ bp::object Holder::GetComponentSchema(const std::string& schema_name) {
 
   return bp::object(component_schema);
 }
+#endif
 
 }  // namespace py
 

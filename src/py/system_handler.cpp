@@ -45,6 +45,7 @@ void SystemHandler::InstantiateSystems(ecs::HolderWeakPtr ecs_holder) {
   for (auto& [_, holder] : systems_) {
     //holder.instance = holder.source_class(this);
     holder.instance = holder.source_class(bp::ptr(this));
+    EnableSystemUpdate(holder.instance);
     //holder.instance = holder.source_class();
     //std::string class_name = bp::extract<std::string>(holder.instance.attr("__class__").attr("__name__"));
     //holder.instance.attr("register_system_handler")(bp::ptr(this));
@@ -88,8 +89,8 @@ void SystemHandler::DisableSystemUpdate(bp::object system_object) {
 
 void SystemHandler::RegisterHandlerClass() {
   bp::class_<SystemHandler>("SystemHandler")
-      .def("enable_system_update", &SystemHandler::EnableSystemUpdate, bp::args(("system_object")))
-      .def("disable_system_update", &SystemHandler::DisableSystemUpdate, bp::args(("system_object")))
+      //.def("enable_system_update", &SystemHandler::EnableSystemUpdate, bp::args(("system_object")))
+      //.def("disable_system_update", &SystemHandler::DisableSystemUpdate, bp::args(("system_object")))
       //.def("shutdown", &SystemHandler::ShutdownHolder)
       .def("get_holder", &SystemHandler::GetHolder)
   ;

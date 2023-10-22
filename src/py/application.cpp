@@ -27,8 +27,6 @@ Application::Application(ecs::HolderWeakPtr ecs_holder)
   inspect_module_ = bp::import("inspect");
   bp::object core_module = bp::import("Core");
   system_base_class_ = core_module.attr("SystemBase");
-  
-
   system_handler_ = std::make_shared<SystemHandler>();
   system_handler_->RegisterHandlerClass();
 }

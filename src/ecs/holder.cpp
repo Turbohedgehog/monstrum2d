@@ -106,7 +106,6 @@ ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
 
 void Holder::Shutdown() {
   shutdown_ = true;
-  std::cout << "Holder shutdown!\n";
 }
 
 ECSWeakPtr Holder::GetOrCreateECS(const std::string& ecs_name) {

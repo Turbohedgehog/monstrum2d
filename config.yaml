@@ -5,13 +5,8 @@ version:
 fps: 30.0
 ecs:
   component:
-    - schemas: assets/main_menu/main_menu_ecs.yaml
-    - schemas: assets/player/player_ecs.yaml
-    #- schemas: assets/game/keyboard_component.yaml
     - schemas: assets/game/gameplay_components.yaml
   system:
-    - declaration: assets/main_menu/main_menu_system.py
-    - declaration: assets/player/player_system.py
     - declaration: assets/game/gameplay.py
     - declaration: assets/game/render.py
-    #- declaration: assets/game/map_generator.py
+    - declaration: assets/game/map_generator.py

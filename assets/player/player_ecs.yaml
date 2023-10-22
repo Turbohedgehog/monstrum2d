@@ -1,7 +1,0 @@
-- component:
-    name: player_component
-    schema:
-    - string:
-        name: player_name
-        default: player
-  
