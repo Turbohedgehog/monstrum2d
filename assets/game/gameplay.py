@@ -30,8 +30,8 @@ BRUTE_MOVE_TIME = [1, 0.8, 0.5, 0.3]
 
 BORDER_SIZE = 1
 
-#MAP_SIZE = IntVector2D(300, 150)
-MAP_SIZE = IntVector2D(100, 100)
+MAP_SIZE = IntVector2D(300, 150)
+#MAP_SIZE = IntVector2D(100, 100)
 
 def sign(value):
   if value > 0:
