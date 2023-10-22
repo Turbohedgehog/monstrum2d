@@ -10,14 +10,17 @@ namespace ecs {
   
 class Component {
  public:
-  Component(std::size_t type_id, std::size_t enity_id, ComponentDataPtr data);
+  Component(std::size_t type_id, std::size_t enity_id, ComponentSchemaWeakPtr schema, ComponentDataPtr data);
 
   ComponentDataPtr GetData() const;
   bool Tick(float delta);
 
+  ComponentSchemaWeakPtr GetSchema() const;
+
  private:
   std::size_t type_id_ = 0;
   std::size_t enity_id_ = 0;
+  ComponentSchemaWeakPtr schema_;
   ComponentDataPtr data_;
   std::optional<ComponentLifetime> lifetime_;
   
