@@ -24,20 +24,8 @@ void Screen::SetKeyPressed(KeyCode key_pressed) {
 }
 
 void Screen::Update(float delta) {
-  #if 0
-  //clear();
-  bkgd(COLOR_PAIR(1));
-
-  //int key = -1;
-  //std::cout << "key = " << key << "\n";
-  move(10, 10);
-  attrset(A_DIM | COLOR_PAIR(5));
-  printw("WWWWWWWWWW");
-  #endif
-  
   int key = getch();
   if (key > 0) { 
-    //printw("   %d", key);
     SetKeyPressed(key);
   } else {
     SetKeyPressed(std::nullopt);
@@ -86,7 +74,6 @@ void Screen::SetClearColorPair(short pair_id) {
   clear_screen_pair_ = pair_id;
 
   bkgd(COLOR_PAIR(clear_screen_pair_));
-  //Clear();
 }
 
 void Screen::Clear() {

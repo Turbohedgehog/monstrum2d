@@ -50,22 +50,6 @@ ecs::ComponentDataPtr Component::AccessField(bp::object field_path) const {
   auto schema_ptr = component_ptr->GetSchema().lock();
 
   return schema_ptr->AccessToComponentData(component_ptr, index_container);
-
-  /*
-  auto data = schema_.lock()->AccessToComponentData(component.GetComponent().lock(), index_container);
-  auto data_type = data->GetType();
-  switch (data_type) {
-    case ecs::ComponentFiledType::Int:
-      return bp::object(std::static_pointer_cast<ecs::ComponentPrimitiveData<int>>(data)->data);
-
-    case ecs::ComponentFiledType::Double:
-      return bp::object(std::static_pointer_cast<ecs::ComponentPrimitiveData<double>>(data)->data);
-
-    case ecs::ComponentFiledType::String:
-      return bp::object(std::static_pointer_cast<ecs::ComponentPrimitiveData<std::string>>(data)->data);
-  }
-  return bp::object();
-  */
 }
 
 void Component::SetField(bp::object field_path, bp::object value) {

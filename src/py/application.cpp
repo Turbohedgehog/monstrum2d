@@ -81,7 +81,6 @@ void Application::CollectSystems(const std::filesystem::path& system_path) {
 
 void Application::InitSystems() {
   try {
-  //system_handler_->RegisterHandlerClass();
     system_handler_->InstantiateSystems(ecs_holder_);
   } catch (boost::python::error_already_set& /*ex*/) {
     PyErr_Print();

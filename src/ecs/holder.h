@@ -19,12 +19,12 @@ class Holder : public std::enable_shared_from_this<Holder> {
 
   void AppendComponentSchema(const std::filesystem::path& schema_path);
   void AppendSystems(const std::filesystem::path& systems_path);
-  void Init();
   void Update(float delta);
   bool IsActive() const;
   std::size_t GetECSCount() const;
   ComponentSchemaWeakPtr GetSchema(const std::string& schema_name) const;
 
+  void Init();
   void Shutdown();
 
   ECSWeakPtr GetOrCreateECS(const std::string& ecs_name);
@@ -37,7 +37,6 @@ class Holder : public std::enable_shared_from_this<Holder> {
   ComponentBitmask CreateComponentBitmask(const std::vector<StringIndex>& components) const;
 
  private:
-  void RegisterServiceSystem();
   void UpdateSystems(float delta);
 
   std::size_t id_;
