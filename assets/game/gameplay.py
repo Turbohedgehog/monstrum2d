@@ -311,7 +311,22 @@ class Gameplay(SystemBase):
     for brute in self.brute_filter:
       self.move_brute(brute, map_component, delta_time)
 
-  def choose_brute_next_direction(self, brute):
+  def check_brute_attack(self, brute, surviver):
+    brute_coordinate = brute.get_component("coordinate")
+    surviver_coordinate = surviver.get_component("coordinate")
+
+    if brute_coordinate.get_field("x") != surviver_coordinate.get_field("x"):
+      return
+    if brute_coordinate.get_field("y") != surviver_coordinate.get_field("y"):
+      return
+    
+    for gameplay in self.gameplay_state_filter:
+      gameplay_state = gameplay.get_component("gameplay_state")
+      gameplay_state.set_field("state", 3)
+    
+    return True
+
+  def choose_brute_next_direction(self, brute, surviver):
     brute_component = brute.get_component("brute")
     brute_state = brute_component.get_field("brute_state")
 
@@ -330,8 +345,7 @@ class Gameplay(SystemBase):
 
     brute_xy = IntVector2D(brute_x, brute_y)
   
-    surviver_entity = next((m for m in self.surviver_filter), None) 
-    surviver_coordinate = surviver_entity.get_component("coordinate")
+    surviver_coordinate = surviver.get_component("coordinate")
     surviver_x = surviver_coordinate.get_field("x")
     surviver_y = surviver_coordinate.get_field("y")
     surviver_xy = IntVector2D(surviver_x, surviver_y)
@@ -378,6 +392,7 @@ class Gameplay(SystemBase):
     move_timer += delta_time
     time_to_move = BRUTE_MOVE_TIME[brute_state]
     if move_timer >= time_to_move:
+      surviver = next((m for m in self.surviver_filter), None) 
       move_timer -= time_to_move
       move_dir_x = brute_component.get_field("move_dir_x")
       move_dir_y = brute_component.get_field("move_dir_y")
@@ -415,10 +430,12 @@ class Gameplay(SystemBase):
         map_component.set_field(["tiles", next_x, next_y], TileType.GROUND.value | ord(" "))
       
       if move_dir_x == 0 and move_dir_y == 0:
-        move_dir_x, move_dir_y = self.choose_brute_next_direction(brute)
+        move_dir_x, move_dir_y = self.choose_brute_next_direction(brute, surviver)
         
       brute_component.set_field("move_dir_x", move_dir_x)
       brute_component.set_field("move_dir_y", move_dir_y)
+
+      self.check_brute_attack(brute, surviver)
 
     brute_component.set_field("move_timer", move_timer)
 

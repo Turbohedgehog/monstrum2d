@@ -120,6 +120,8 @@ class Render(SystemBase):
     title = "Congratulations!!!"
     message = "You have left the dungeon!"
     center = Terminal.get_size() / 2
+
+    screen.select_color_pair(MAP_COLOR_PAIR)
     
     screen.clear()
 
