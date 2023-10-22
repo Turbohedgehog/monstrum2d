@@ -82,7 +82,7 @@ class Render(SystemBase):
         self.draw_bad_ending(screen)
       else:
         raise "Unexpected gameplay state"
-      self.draw_time(screen)
+      #self.draw_time(screen)
     except Exception as ex:
       print(ex)
       raise
