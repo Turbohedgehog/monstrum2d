@@ -84,7 +84,6 @@ void Core::InitHolders() {
 }
 
 void Core::MainLoop() {
-  //using namespace std::chrono_literals;
   auto fps = core_config_.GetFPS();
   auto delay = std::chrono::duration<double>(1./fps);
   std::chrono::high_resolution_clock timer;

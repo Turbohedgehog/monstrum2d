@@ -2,10 +2,9 @@
 
 #include <boost/optional.hpp>
 
-#include "py/py.h"
-
 #include "common/common_types.h"
 
+#include "py/py.h"
 #include "py/py_component.h"
 
 namespace m2d {
@@ -20,7 +19,6 @@ class Entity {
 
   bp::object GetComponent(bp::object index) const;
   int GetId() const;
-  //bp::list GetComponents(bp::list indexes) const;
 
  private:
   ecs::EntityWeakPtr entity_;

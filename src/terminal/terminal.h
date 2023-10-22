@@ -29,7 +29,6 @@ class Terminal {
   std::size_t active_screen_counter_ = 0;
   std::map<std::size_t, ScreenPtr> active_screens_;
   ScreenPtr active_screen_;
-  //std::ostream ostream_;
   int height_ = 0;
   int width_ = 0;
 };

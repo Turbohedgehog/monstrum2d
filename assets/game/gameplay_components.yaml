@@ -29,8 +29,6 @@
         - double:
             name: move_timer
         - int:
-            name: is_hunting
-        - int:
             name: move_dir_x
         - int:
             name: move_dir_y
@@ -42,16 +40,6 @@
             name: x
         - int:
             name: y
-
-- component:
-    name: map_tile
-    schema:
-        - int:
-            name: view
-        - int:
-            name: color_pair
-        - int:
-            name: type
 
 - component:
     name: key

@@ -8,29 +8,7 @@ namespace m2d {
 
 namespace hi {
 
-Terminal::Terminal() {
-  #if 0
-  //AppendScreen();
-  
-  auto screen = initscr();
-  keypad(screen, true);
-  noecho();
-  #endif
-
-  #if 0
-  curs_set(0);
-  start_color();
-  init_pair(1, COLOR_WHITE, COLOR_BLUE);
-  init_pair(2, COLOR_MAGENTA, COLOR_BLUE);
-  init_pair(3, COLOR_GREEN, COLOR_BLUE);
-  init_pair(4, COLOR_RED, COLOR_BLUE);
-  init_pair(5, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(6, COLOR_WHITE, COLOR_RED);
-
-  //bkgd(COLOR_PAIR(6));
-  bkgd(COLOR_PAIR(1));
-  #endif
-}
+Terminal::Terminal() {}
 
 Terminal& Terminal::GetInstance() {
   static Terminal instance;
@@ -46,9 +24,6 @@ ScreenWeakPtr Terminal::AppendScreen() {
     noecho();
     curs_set(0);
     raw();
-    
-    //system("chcp 1252");
-    //system("chcp 1251");
   }
 
   auto screen = std::make_shared<Screen>(active_screen_counter_);

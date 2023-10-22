@@ -8,7 +8,7 @@
 #include "ecs/component_schema_loader.h"
 #include "ecs/component_schema.h"
 #include "ecs/ecs.h"
-#include "ecs/systems/service_system.h"
+#include "ecs/system.h"
 
 #include "py/application.h"
 
@@ -33,22 +33,16 @@ void Holder::AppendComponentSchema(const std::filesystem::path& schema_path) {
   }
 }
 
+void Holder::Init() {
+  py_application_->InitSystems();
+}
+
 void Holder::AppendSystems(const std::filesystem::path& systems_path) {
   if (!py_application_) {
     py_application_ = std::make_shared<py::Application>(shared_from_this());
   }
 
   py_application_->CollectSystems(systems_path);
-}
-
-void Holder::Init() {
-  //RegisterServiceSystem();
-
-  py_application_->InitSystems();
-}
-
-void Holder::RegisterServiceSystem() {
-  AppendSystem(std::make_shared<ServiceSystem>(shared_from_this()));
 }
 
 void Holder::AppendSystem(SystemPtr system) {
@@ -106,7 +100,6 @@ ComponentSchemaWeakPtr Holder::GetSchema(const std::string& schema_name) const {
 
 void Holder::Shutdown() {
   shutdown_ = true;
-  std::cout << "Holder shutdown!\n";
 }
 
 ECSWeakPtr Holder::GetOrCreateECS(const std::string& ecs_name) {

@@ -14,9 +14,6 @@ class Screen;
 using ScreenPtr = std::shared_ptr<Screen>;
 using ScreenWeakPtr = std::weak_ptr<Screen>;
 
-class Widget;
-using WidgetPtr = std::shared_ptr<Widget>;
-
 using KeyCode = std::optional<int>;
 
 }  // namespace hi

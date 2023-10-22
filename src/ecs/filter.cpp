@@ -1,7 +1,6 @@
 #include "ecs/filter.h"
 
 #include "ecs/ecs.h"
-//#include "ecs/holder.h"
 #include "ecs/entity.h"
 
 namespace m2d {
