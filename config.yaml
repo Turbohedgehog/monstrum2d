@@ -10,3 +10,4 @@ ecs:
     - declaration: assets/game/gameplay.py
     - declaration: assets/game/render.py
     - declaration: assets/game/map_generator.py
+    - declaration: assets/game/brute.py
