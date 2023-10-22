@@ -299,7 +299,7 @@ class Gameplay(SystemBase):
     
     for brute in self.brute_filter:
       brute_component = brute.get_component("brute")
-      brute_component.set_field("state", collected_keys)
+      brute_component.set_field("brute_state", collected_keys - 1)
 
   def update_brute(self, delta_time):
     map_entity = next((m for m in self.map_filter), None) 
@@ -311,9 +311,63 @@ class Gameplay(SystemBase):
     for brute in self.brute_filter:
       self.move_brute(brute, map_component, delta_time)
 
+  def choose_brute_next_direction(self, brute):
+    brute_component = brute.get_component("brute")
+    brute_state = brute_component.get_field("brute_state")
+
+    move_dir_x = 0
+    move_dir_y = 0
+    if brute_state == 0:
+      if random.randint(0, 1) == 0:
+        move_dir_x = random.randint(-5, 5)
+      else:
+        move_dir_y = random.randint(-5, 5)
+      return move_dir_x, move_dir_y
+    
+    brute_coordinate = brute.get_component("coordinate")
+    brute_x = brute_coordinate.get_field("x")
+    brute_y = brute_coordinate.get_field("y")
+
+    brute_xy = IntVector2D(brute_x, brute_y)
+  
+    surviver_entity = next((m for m in self.surviver_filter), None) 
+    surviver_coordinate = surviver_entity.get_component("coordinate")
+    surviver_x = surviver_coordinate.get_field("x")
+    surviver_y = surviver_coordinate.get_field("y")
+    surviver_xy = IntVector2D(surviver_x, surviver_y)
+
+    diff = surviver_xy - brute_xy
+    diff_sing = IntVector2D(sign(diff.x), sign(diff.y))
+
+    if brute_state == 1:
+      if random.randint(0, 1) == 0:
+        shift_x = diff_sing.x * 3
+        move_dir_x = random.randint(-2, 2)
+        move_dir_x += shift_x
+      else:
+        shift_y = diff_sing.y * 3
+        move_dir_y = random.randint(-2, 2)
+        move_dir_y += shift_y
+      return move_dir_x, move_dir_y
+
+    if brute_state == 2:
+      abs_x = abs(diff_sing.x)
+      abs_y = abs(diff_sing.y)
+      if abs_x > abs_y:
+        return diff_sing.x, 0
+      elif diff_sing.x < diff_sing.y:
+        return 0, diff_sing.y
+      else:
+        return (diff_sing.x, 0) if random.randint(0, 1) == 0 else (0, diff_sing.y)
+      
+    if brute_state == 3:
+      return diff_sing.x, diff_sing.y
+    
+    raise "Unknown brute state"
+
   def move_brute(self, brute, map_component, delta_time):
     brute_component = brute.get_component("brute")
-    state = brute_component.get_field("state")
+    brute_state = brute_component.get_field("brute_state")
     coordinate = brute.get_component("coordinate")
     x = coordinate.get_field("x")
     y = coordinate.get_field("y")
@@ -322,7 +376,7 @@ class Gameplay(SystemBase):
 
     move_timer = brute_component.get_field("move_timer")
     move_timer += delta_time
-    time_to_move = BRUTE_MOVE_TIME[state]
+    time_to_move = BRUTE_MOVE_TIME[brute_state]
     if move_timer >= time_to_move:
       move_timer -= time_to_move
       move_dir_x = brute_component.get_field("move_dir_x")
@@ -337,47 +391,34 @@ class Gameplay(SystemBase):
         next_y += sign_y
         move_dir_y -= sign_y
 
-      tile = map_component.get_field(["tiles", x, y])
+      #tile = map_component.get_field(["tiles", next_x, next_y])
 
       width = map_component.get_field("width")
       height = map_component.get_field("height")
       
-      if next_x < 0 or next_x >= width or next_y < 0 or next_y >= height:
+      if next_x < BORDER_SIZE or next_x >= width - BORDER_SIZE or next_y < BORDER_SIZE or next_y >= height - BORDER_SIZE:
+        # Stay inside the map
         move_dir_x = 0
         move_dir_y = 0
-      elif tile & TileType.WALL.value == 0:
+      elif map_component.get_field(["tiles", next_x, next_y]) & TileType.WALL.value == 0:
+        # Check if next tile is free
         coordinate.set_field("x", next_x)
         coordinate.set_field("y", next_y)
-      elif state < 3:
+      elif brute_state < 3:
+        # If next tile is wall and Brute state less than 3 then reset move direction
         move_dir_x = 0
         move_dir_y = 0
       else:
+        # If next tile is wall and Brule level more equal than 3 then break the wall
         coordinate.set_field("x", next_x)
         coordinate.set_field("y", next_y)
         map_component.set_field(["tiles", next_x, next_y], TileType.GROUND.value | ord(" "))
       
       if move_dir_x == 0 and move_dir_y == 0:
-        if random.randint(0, 1) == 0:
-          move_dir_x = random.randint(-5, 5)
-        else:
-          move_dir_y = random.randint(-5, 5)
-        '''
-        if state == 1:
-          if random.randint(0, 1) == 0:
-            move_dir_x = random.randint(-5, 5)
-          else:
-            move_dir_y = random.randint(-5, 5)
-        elif state == 2:
-          pass
-        elif state == 3:
-          pass
-        elif state == 4:
-          pass
-        else:
-          raise "Unknown brute state"
-        '''
-        brute_component.set_field("move_dir_x", move_dir_x)
-        brute_component.set_field("move_dir_y", move_dir_y)
+        move_dir_x, move_dir_y = self.choose_brute_next_direction(brute)
+        
+      brute_component.set_field("move_dir_x", move_dir_x)
+      brute_component.set_field("move_dir_y", move_dir_y)
 
     brute_component.set_field("move_timer", move_timer)
 
@@ -420,7 +461,7 @@ class Gameplay(SystemBase):
 
     brute_entity = self.gameplay_ecs.create_entity(["brute", "coordinate"])
     brute_component = brute_entity.get_component("brute")
-    brute_component.set_field("state", 1)
+    brute_component.set_field("brute_state", 0)
     brute_coordinate_component = brute_entity.get_component("coordinate")
     brute_coordinate_component.set_field("x", far_pos.x)
     brute_coordinate_component.set_field("y", far_pos.y)
