@@ -3,13 +3,10 @@
 #include <map>
 #include <string>
 
-#include "py/py.h"
-
 #include "common/common_types.h"
 
+#include "py/py.h"
 #include "py/py_ecs.h"
-
-#include "py/py_component_schema.h"
 
 namespace m2d {
 
@@ -23,12 +20,8 @@ class Holder {
   void Shutdown();
   ECS GetOrCreateECS(const std::string& ecs_name);
 
-  bp::object GetComponentSchema(const std::string& schema_name);
-  bp::object GetComponentSchemaId(const std::string& schema_name);
-
  private:
   ecs::HolderWeakPtr holder_;
-  std::map<std::string, ComponentSchema> component_schemas_;
 
 };
 

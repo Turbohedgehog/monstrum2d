@@ -1,6 +1,5 @@
 from Core import SystemBase
 from Core import Terminal
-from Core import Color
 from Core import IntVector2D
 
 
@@ -8,8 +7,7 @@ MAP_COLOR_PAIR = 1
 BAD_ENDING_COLOR_PAIR = MAP_COLOR_PAIR + 1
 SURVIVER_COLOR_PAIR = BAD_ENDING_COLOR_PAIR + 1
 BRUTE_COLOR_PAIR = SURVIVER_COLOR_PAIR + 1
-
-KEYS_COLOR_PAIRS = [BRUTE_COLOR_PAIR + i + 1 for i in range(4)] #[4, 5, 6, 7,]
+KEYS_COLOR_PAIRS = [BRUTE_COLOR_PAIR + i + 1 for i in range(4)]
 
 class Render(SystemBase):
   def __init__(self, system_handler):
@@ -18,30 +16,17 @@ class Render(SystemBase):
     self.holder = system_handler.get_holder()
     self.camera_location = (0, 0)
 
-    self.map_schema = self.holder.get_component_schema("map")
     self.map_ecs = self.holder.get_or_create_ecs("map")
     self.map_filter = self.map_ecs.get_or_create_filter(["map"])
-
     self.gameplay_ecs = self.holder.get_or_create_ecs("gameplay")
-    self.gameplay_state_schema = self.holder.get_component_schema("gameplay_state")
     self.gameplay_state_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
     self.gameplay_filter = self.gameplay_ecs.get_or_create_filter(["gameplay_state"])
-
-    self._screen = None
-    self.system_handler.enable_system_update(self)
-
-    self.coordinate_schema = self.holder.get_component_schema("coordinate")
-    self.surviver_schema = self.holder.get_component_schema("surviver")
     self.surviver_filter = self.gameplay_ecs.get_or_create_filter(["surviver", "coordinate"])
-
-    self.key_schema = self.holder.get_component_schema("key")
     self.key_filter = self.gameplay_ecs.get_or_create_filter(["key", "coordinate"])
-
-    self.exit_schema = self.holder.get_component_schema("exit")
     self.exit_filter = self.gameplay_ecs.get_or_create_filter(["exit", "coordinate"])
-
     self.brute_filter = self.gameplay_ecs.get_or_create_filter(["brute", "coordinate"])
 
+    self._screen = None
     self.time = 0
 
     self.exit_border = [
@@ -71,7 +56,7 @@ class Render(SystemBase):
     
     try:
       gameplay_state = gameplay.get_component("gameplay_state")
-      state = self.gameplay_state_schema.get_field(gameplay_state, "state")
+      state = gameplay_state.get_field("state")
       if state == 0:
         self.draw_intro(screen)
       elif state == 1:
@@ -89,17 +74,13 @@ class Render(SystemBase):
 
 
   def draw_intro(self, screen):
-    title = "Intro"
-    #message = "You have left the dungeon!"
+    title = "Remember! You're not alone..."
     center = Terminal.get_size() / 2
     
     screen.clear()
 
     screen.move_to(int(center.x - len(title) / 2), center.y - 1)
     screen.print(title)
-
-    #screen.move_to(int(center.x - len(message) / 2), center.y + 1)
-    #screen.print(message)
 
   def draw_gameplay(self, screen):
     try:
@@ -156,7 +137,7 @@ class Render(SystemBase):
     try:
       for state_entity in self.gameplay_state_filter:
         gameplay_state = state_entity.get_component("gameplay_state")
-        screen_id = self.gameplay_state_schema.get_field(gameplay_state, "screen_id")
+        screen_id = gameplay_state.get_field("screen_id")
         self._screen = Terminal.get_screen(screen_id)
       
       if not self._screen:
@@ -192,8 +173,8 @@ class Render(SystemBase):
     
   def get_surviver_location(self, surviver_enity) -> IntVector2D:
     coordinate_component = surviver_enity.get_component("coordinate")
-    x = self.coordinate_schema.get_field(coordinate_component, "x")
-    y = self.coordinate_schema.get_field(coordinate_component, "y")
+    x = coordinate_component.get_field("x")
+    y = coordinate_component.get_field("y")
     return IntVector2D(x, y)
 
   def draw_surviver(self, screen):
@@ -228,8 +209,8 @@ class Render(SystemBase):
     half_size = screen_size / 2
     for exit_entity in self.exit_filter:
       exit_coordinate_component = exit_entity.get_component("coordinate")
-      x = self.coordinate_schema.get_field(exit_coordinate_component, "x")
-      y = self.coordinate_schema.get_field(exit_coordinate_component, "y")
+      x = exit_coordinate_component.get_field("x")
+      y = exit_coordinate_component.get_field("y")
       exit_pos = IntVector2D(x, y)
       diff = exit_pos - surviver_xy
       screen_pos = half_size + diff
@@ -237,7 +218,7 @@ class Render(SystemBase):
       screen_pos.y = max(0, min(screen_size.y - 1, screen_pos.y))
 
       exit_component = exit_entity.get_component("exit")
-      is_opened = self.exit_schema.get_field(exit_component, "state") > 0
+      is_opened = exit_component.get_field("state") > 0
       color = SURVIVER_COLOR_PAIR if is_opened else BRUTE_COLOR_PAIR
       screen.select_color_pair(color)
 
@@ -248,7 +229,7 @@ class Render(SystemBase):
         if p.y < 0 or p.y >= screen_size.y:
           continue
         border_pos = exit_pos + b
-        if (self.map_schema.get_field(map_component, ["tiles", border_pos.x, border_pos.y]) & ~255) != 0:
+        if (map_component.get_field(["tiles", border_pos.x, border_pos.y]) & ~255) != 0:
           continue
         screen.move_to(p.x, p.y)
         screen.print("G")
@@ -262,8 +243,8 @@ class Render(SystemBase):
     half_size = screen_size / 2
     for key_entity in self.key_filter:
       coordinate_component = key_entity.get_component("coordinate")
-      x = self.coordinate_schema.get_field(coordinate_component, "x")
-      y = self.coordinate_schema.get_field(coordinate_component, "y")
+      x = coordinate_component.get_field("x")
+      y = coordinate_component.get_field("y")
       key_pos = IntVector2D(x, y)
       diff = key_pos - surviver_xy
       '''
@@ -271,7 +252,7 @@ class Render(SystemBase):
         continue
       '''
       key_component = key_entity.get_component("key")
-      id = self.key_schema.get_field(key_component, "id")
+      id = key_component.get_field("id")
 
       screen_pos = half_size + diff
       screen_pos.x = max(0, min(screen_size.x - 1, screen_pos.x))
@@ -297,18 +278,14 @@ class Render(SystemBase):
     screen_width = screen_size.x
     screen_height = screen_size.y
     screen_size_half = screen_size / 2
-    #screen_width_half = int(screen_width / 2)
-    #screen_height_half = int(screen_height / 2)
-    
     
     map_component = map_entity.get_component("map")
-    map_width = self.map_schema.get_field(map_component, "width")
-    map_height = self.map_schema.get_field(map_component, "height")
+    map_width = map_component.get_field("width")
+    map_height = map_component.get_field("height")
 
     screen_width_from = surviver_xy.x - screen_size_half.x
     screen_height_from = surviver_xy.y - screen_size_half.y
     screen_width_to = screen_width_from + screen_width
-    #screen_height_to = screen_height_from + screen_height
 
     screen.select_color_pair(MAP_COLOR_PAIR)
     for y in range(screen_height):
@@ -321,6 +298,6 @@ class Render(SystemBase):
           if x < 0 or x >= map_width:
             s += " "
           else:
-            s += chr(self.map_schema.get_field(map_component, ["tiles", x, map_y]) & 255)
+            s += chr(map_component.get_field(["tiles", x, map_y]) & 255)
       screen.move_to(0, y)
       screen.print(s)

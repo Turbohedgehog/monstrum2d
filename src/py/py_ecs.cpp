@@ -1,7 +1,5 @@
 #include "py/py_ecs.h"
 
-//#include <algorithm>
-
 #include "py/py_entity.h"
 
 #include "ecs/ecs.h"
